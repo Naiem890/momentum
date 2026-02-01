@@ -281,29 +281,46 @@ export default function StreakQuestPage() {
             {/* Right Column (Span 8) */}
             <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-y-auto custom-scrollbar pr-1">
                 
-                {/* Quote Widget */}
+
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  whileHover={{ scale: 1.005 }}
-                  className="bg-surface-dark rounded-3xl p-8 flex items-center justify-center shadow-sm min-h-[140px] shrink-0"
+                  whileHover={{ scale: 1.01 }}
+                  className="relative overflow-hidden rounded-3xl p-8 flex items-center justify-center shadow-lg min-h-[180px] shrink-0 group m-1"
                 >
-                    <div className="flex gap-6 items-start max-w-2xl">
+                    {/* Background Gradient & Effects */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-surface-dark to-surface-dark border border-primary/20 transition-all duration-500 group-hover:border-primary/40" />
+                    
+                    <motion.div 
+                      className="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                    />
+
+                    <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto">
                         <motion.div
-                          animate={{ rotate: [0, 5, 0] }}
-                          transition={{ duration: 3, repeat: Infinity }}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="flex items-center gap-2 mb-4"
                         >
-                          <Quote className="w-10 h-10 text-surface-dark-lighter shrink-0 fill-current" />
+                            <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Daily Wisdom</span>
                         </motion.div>
-                        <motion.p 
-                          className="text-lg md:text-xl italic font-medium text-gray-200 leading-relaxed"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.3 }}
-                        >
-                            &quot;Discipline is doing what needs to be done, even if you don&apos;t want to do it.&quot;
-                        </motion.p>
+
+                        <div className="relative">
+                            <Quote className="absolute -top-8 -left-10 w-10 h-10 text-primary/20 rotate-180" />
+                            <motion.p 
+                              className="text-2xl md:text-4xl font-display text-white leading-tight tracking-wide drop-shadow-md"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.3 }}
+                              style={{ fontStyle: 'italic' }} 
+                            >
+                                &quot;Discipline is doing what needs to be done, even if you don&apos;t want to do it.&quot;
+                            </motion.p>
+                            <Quote className="absolute -bottom-8 -right-10 w-10 h-10 text-primary/20" />
+                        </div>
                     </div>
                 </motion.div>
 
