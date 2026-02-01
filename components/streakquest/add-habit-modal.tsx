@@ -317,7 +317,10 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                                             min="0" 
                                             max="23"
                                             value={hours}
-                                            onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                                            onChange={(e) => {
+                                                const val = parseInt(e.target.value) || 0;
+                                                setHours(Math.min(23, Math.max(0, val)));
+                                            }}
                                             className="bg-transparent border-surface-border text-white text-center font-mono text-base h-10" 
                                         />
                                     </div>
@@ -329,7 +332,10 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                                             min="0" 
                                             max="59" 
                                             value={minutes}
-                                            onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                                            onChange={(e) => {
+                                                const val = parseInt(e.target.value) || 0;
+                                                setMinutes(Math.min(59, Math.max(0, val)));
+                                            }}
                                             className="bg-transparent border-surface-border text-white text-center font-mono text-base h-10" 
                                         />
                                     </div>
