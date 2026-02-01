@@ -392,7 +392,7 @@ export default function MomentumDashboard() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="relative overflow-hidden rounded-3xl p-4 flex items-center justify-center shadow-lg min-h-[180px] shrink-0 group max-w-[1400px] w-full mx-auto mb-6"
+        className="relative overflow-hidden rounded-3xl p-4 flex items-center justify-center shadow-lg shrink-0 group max-w-[1400px] w-full mx-auto mb-6"
       >
           {/* Background Gradient & Effects */}
           <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-surface-dark to-surface-dark border border-primary/20 transition-all duration-500 group-hover:border-primary/40 rounded-3xl" />
@@ -408,15 +408,15 @@ export default function MomentumDashboard() {
                 transition={{ delay: 0.2 }}
                 className="flex items-center justify-between w-full mb-4 px-4"
               >
-                  <div className="w-8" /> {/* Spacer */}
-                  <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Quote of the day</span>
+                  {/* <div className="w-8" /> 
+                  <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Quote of the day</span> */}
                   
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => loadNewQuote(true)}
                     disabled={isQuoteLoading}
-                    className="text-primary/50 hover:text-primary hover:bg-primary/10 transition-colors w-8 h-8 rounded-full"
+                    className="text-primary/50 hover:text-primary hover:bg-primary/10 transition-colors w-8 h-8 rounded-full absolute top-0 right-0"
                   >
                       <motion.div
                         animate={isQuoteLoading ? { rotate: 360 } : { rotate: 0 }}
@@ -439,8 +439,8 @@ export default function MomentumDashboard() {
                       className="flex flex-col items-center gap-4"
                     >
                       <p 
-                        className="text-xl md:text-2xl font-display text-white leading-tight tracking-wide drop-shadow-md"
-                        style={{ fontStyle: 'italic' }} 
+                        className="text-xl md:text-2xl text-white leading-relaxed tracking-wide drop-shadow-md italic font-medium"
+                        style={{ fontFamily: 'var(--font-quote)' }} 
                       >
                         {quote.text}
                       </p>
