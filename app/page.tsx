@@ -16,11 +16,12 @@ import { Habit, UserStats, HabitCategory } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { fetchQuote, Quote as QuoteType, MOTIVATIONAL_QUOTES } from '@/lib/quotes';
 import { HabitCard } from '@/components/streakquest/habit-card';
+import { StreakCard } from '@/components/streakquest/streak-card';
 import { Heatmap } from '@/components/streakquest/heatmap';
 import { Milestones } from '@/components/streakquest/milestones';
 import { WeeklyProgress } from '@/components/streakquest/weekly-progress';
 import { AddHabitModal } from '@/components/streakquest/add-habit-modal';
-import { Celebration, AnimatedCounter, StreakFire } from '@/components/streakquest/animations';
+import { Celebration, AnimatedCounter } from '@/components/streakquest/animations';
 import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
 import {
@@ -333,8 +334,8 @@ export default function MomentumDashboard() {
   const additionalTasks = habits.filter(h => !h.isStreakable);
 
   // Current streak is based on streakable habits only
-  // const currentStreak = streakableTasks.length > 0 ? Math.max(...streakableTasks.map(h => h.streak)) : 0;
-  const currentStreak = 100; // MOCK FOR DEMO
+  const currentStreak = streakableTasks.length > 0 ? Math.max(...streakableTasks.map(h => h.streak)) : 0;
+  // const currentStreak = 100; // MOCK FOR DEMO
 
   if (!mounted) {
     return (
@@ -458,65 +459,7 @@ export default function MomentumDashboard() {
             {/* Left Column (Span 4) */}
             <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-hidden">
                 {/* Streak Widget */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                  className="relative bg-surface-dark rounded-3xl p-8 flex flex-col justify-between h-[280px] shadow-sm overflow-hidden group shrink-0"
-                >
-                    {/* Animated top gradient line */}
-                    <motion.div 
-                      className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent"
-                      animate={{ opacity: [0.3, 0.7, 0.3] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                    
-                    {/* Ambient glow */}
-                    <motion.div
-                      className="absolute -top-20 -right-20 w-60 h-60 bg-primary/10 rounded-full blur-3xl"
-                      animate={{ 
-                        opacity: [0.2, 0.4, 0.2]
-                      }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                    />
-                    
-                    <div className="flex justify-between items-start relative z-10">
-                        <StreakFire streak={currentStreak} />
-                        <motion.span 
-                          className="font-mono text-2xl font-bold text-gray-800 opacity-20 group-hover:opacity-40 transition-opacity"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 0.2 }}
-                          transition={{ delay: 0.5 }}
-                        >
-                          #01
-                        </motion.span>
-                    </div>
-
-                    <div className="flex flex-col items-start relative z-10">
-                        <motion.h1 
-                          className="text-[10rem] leading-none font-bold font-mono tracking-tighter text-white drop-shadow-2xl"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-                        >
-                            <AnimatedCounter value={currentStreak} />
-                        </motion.h1>
-                        <motion.span 
-                          className="text-primary font-mono font-bold tracking-widest text-sm mt-2 uppercase flex items-center gap-2"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <motion.div
-                            animate={{ opacity: [0.7, 1, 0.7] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          >
-                            🔥
-                          </motion.div>
-                          Day Streak
-                        </motion.span>
-                    </div>
-                </motion.div>
+                <StreakCard streak={currentStreak} />
 
                 {/* Weekly Progress - Compact Mode */}
                 <div className="shrink-0">

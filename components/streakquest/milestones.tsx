@@ -17,12 +17,12 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
   const maxStreak = currentStreak;
   
   const badges = [
-    { id: '7day', name: '7-DAY', icon: Zap, earned: maxStreak >= 7, desc: '7 Day Streak', progress: Math.min(100, (maxStreak / 7) * 100), target: 7, current: maxStreak, type: 'streak' },
-    { id: '30day', name: '30-DAY', icon: Flame, earned: maxStreak >= 30, desc: '30 Day Streak', progress: Math.min(100, (maxStreak / 30) * 100), target: 30, current: maxStreak, type: 'streak' },
-    { id: '60day', name: '60-DAY', icon: Award, earned: maxStreak >= 60, desc: '60 Day Streak', progress: Math.min(100, (maxStreak / 60) * 100), target: 60, current: maxStreak, type: 'streak' },
-    { id: '100day', name: '100-DAY', icon: Medal, earned: maxStreak >= 100, desc: '100 Day Streak', progress: Math.min(100, (maxStreak / 100) * 100), target: 100, current: maxStreak, type: 'streak' },
-    { id: '365day', name: 'TITAN', icon: Crown, earned: maxStreak >= 365, desc: '365 Day Streak', progress: Math.min(100, (maxStreak / 365) * 100), target: 365, current: maxStreak, type: 'streak' },
-    { id: '100q', name: 'WARRIOR', icon: Star, earned: stats.totalHabitsCompleted >= 100, desc: '100 Quests', progress: Math.min(100, (stats.totalHabitsCompleted / 100) * 100), target: 100, current: stats.totalHabitsCompleted, type: 'quest' },
+    { id: '7day', name: '7-DAY CHALLENGE', icon: Zap, earned: maxStreak >= 7, desc: '7 Day Streak', progress: Math.min(100, (maxStreak / 7) * 100), target: 7, current: maxStreak, type: 'streak' },
+    { id: '30day', name: '30-DAY CHALLENGE', icon: Flame, earned: maxStreak >= 30, desc: '30 Day Streak', progress: Math.min(100, (maxStreak / 30) * 100), target: 30, current: maxStreak, type: 'streak' },
+    { id: '60day', name: '60-DAY CHALLENGE', icon: Award, earned: maxStreak >= 60, desc: '60 Day Streak', progress: Math.min(100, (maxStreak / 60) * 100), target: 60, current: maxStreak, type: 'streak' },
+    { id: '100day', name: '100-DAY CHALLENGE', icon: Medal, earned: maxStreak >= 100, desc: '100 Day Streak', progress: Math.min(100, (maxStreak / 100) * 100), target: 100, current: maxStreak, type: 'streak' },
+    { id: '365day', name: 'TITAN CHALLENGE', icon: Crown, earned: maxStreak >= 365, desc: '365 Day Streak', progress: Math.min(100, (maxStreak / 365) * 100), target: 365, current: maxStreak, type: 'streak' },
+    { id: '100q', name: 'WARRIOR CHALLENGE', icon: Star, earned: stats.totalHabitsCompleted >= 100, desc: '100 Quests', progress: Math.min(100, (stats.totalHabitsCompleted / 100) * 100), target: 100, current: stats.totalHabitsCompleted, type: 'quest' },
     { id: '500q', name: 'LEGEND', icon: Crown, earned: stats.totalHabitsCompleted >= 500, desc: '500 Quests', progress: Math.min(100, (stats.totalHabitsCompleted / 500) * 100), target: 500, current: stats.totalHabitsCompleted, type: 'quest' },
   ];
 
@@ -32,7 +32,7 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
   const Icon = nextBadge.icon;
   const isMastered = nextBadge.earned;
   const showMastered = !badges.find(b => !b.earned); // All badges earned
-  const showJourney = earnedBadges.length > 0;
+
 
   return (
     <Card className="h-full bg-surface-dark border border-white/5 shadow-2xl flex flex-col overflow-hidden rounded-3xl relative group">
@@ -40,9 +40,9 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
       <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]" />
       <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
       
-      <div className={cn("relative z-10 flex flex-col h-full justify-between", showJourney ? "p-5 gap-2" : "p-6")}>
+      <div className="relative z-10 px-5 py-4">
           {/* Section 1: Focus / Current Objective */}
-          <div className={cn("flex flex-col", showJourney ? "gap-2" : "gap-6 flex-1 justify-center")}>
+          <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-white tracking-widest uppercase opacity-90">Current Objective</h3>
                   <div className={cn(
@@ -56,22 +56,19 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
                   </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 mt-2">
                   <motion.div 
-                    className={cn(
-                      "relative rounded-2xl bg-gradient-to-br from-surface-dark-lighter to-black border border-white/5 flex items-center justify-center shrink-0 shadow-lg",
-                      showJourney ? "w-10 h-10" : "w-16 h-16"
-                    )}
+                    className="relative rounded-2xl bg-gradient-to-br from-surface-dark-lighter to-black border border-white/5 flex items-center justify-center shrink-0 shadow-lg w-10 h-10"
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                       <div className="absolute inset-0 bg-primary/5 rounded-2xl" />
-                      <Icon className={cn("text-primary drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]", showJourney ? "w-5 h-5" : "w-8 h-8")} />
+                      <Icon className="text-primary drop-shadow-[0_0_8px_rgba(52,211,153,0.5)] w-5 h-5" />
                   </motion.div>
                   
                   <div className="flex-1 min-w-0">
                       <h2 
-                        className={cn("font-display italic font-bold text-white tracking-wide leading-none mb-1 truncate", showJourney ? "text-lg" : "text-3xl")}
+                        className="font-display italic font-bold text-white tracking-wide leading-none mb-1 truncate text-lg"
                         style={{ fontFamily: 'var(--font-russo)' }}
                       >
                         {nextBadge.name}
@@ -92,8 +89,7 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
           </div>
 
           {/* Section 2: Trophy Shelf / Timeline (Only shown if started) */}
-          {showJourney && (
-            <div className="pt-2"> 
+            <div className="pt-4"> 
                 <div className="flex items-center justify-between mb-2">
                    <span className="text-[10px] text-gray-500 font-mono tracking-wider uppercase">Journey</span>
                    <span className="text-[10px] text-primary font-mono">{earnedBadges.length} / {badges.length}</span>
@@ -124,7 +120,6 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
                     ))}
                 </div>
             </div>
-          )}
       </div>
     </Card>
   );
