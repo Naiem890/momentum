@@ -441,7 +441,7 @@ export default function MomentumDashboard() {
                     >
                       <p 
                         className="text-xl md:text-2xl text-white leading-relaxed tracking-wide drop-shadow-md italic font-medium"
-                        style={{ fontFamily: 'var(--font-quote)' }} 
+                        style={{ fontFamily: 'var(--font-quote), serif' }} 
                       >
                         {quote.text}
                       </p>
