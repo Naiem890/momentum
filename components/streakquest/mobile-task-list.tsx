@@ -43,21 +43,16 @@ interface MobileTaskListProps {
 
 const variants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? 100 : -100,
+    x: direction > 0 ? 20 : -20,
     opacity: 0,
-    scale: 0.95,
   }),
   center: {
-    zIndex: 1,
     x: 0,
     opacity: 1,
-    scale: 1,
   },
   exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 100 : -100,
+    x: direction < 0 ? 20 : -20,
     opacity: 0,
-    scale: 0.95,
   }),
 };
 

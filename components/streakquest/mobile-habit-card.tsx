@@ -120,12 +120,8 @@ export function MobileHabitCard({ habit, onToggle, onDelete, onEdit, onProgress,
 
   return (
     <>
-      <motion.div
-        layout
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, x: -100 }}
-        transition={{ delay: index * 0.03 }}
+
+      <div
         onContextMenu={(e) => { e.preventDefault(); handleLongPress(); }}
         className={cn(
           "relative rounded-2xl border transition-all duration-200 overflow-hidden",
@@ -223,7 +219,7 @@ export function MobileHabitCard({ habit, onToggle, onDelete, onEdit, onProgress,
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Bottom Action Sheet */}
       <AnimatePresence>
