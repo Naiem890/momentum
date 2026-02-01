@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Habit } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { MobileHabitCard } from './mobile-habit-card';
@@ -41,6 +41,26 @@ interface MobileTaskListProps {
   onAddNew: () => void;
 }
 
+const variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 100 : -100,
+    opacity: 0,
+    scale: 0.95,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 100 : -100,
+    opacity: 0,
+    scale: 0.95,
+  }),
+};
+
 export function MobileTaskList({
   habits,
   completedTasks,
@@ -53,21 +73,46 @@ export function MobileTaskList({
   onDeleteCompletedTask,
   onAddNew
 }: MobileTaskListProps) {
-  const [filter, setFilter] = React.useState<FilterType>('all');
-  const [taskToRestore, setTaskToRestore] = React.useState<Habit | null>(null);
+  const [filterIndex, setFilterIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [taskToRestore, setTaskToRestore] = useState<Habit | null>(null);
 
   const streakableTasks = habits.filter(h => h.isStreakable);
   const additionalTasks = habits.filter(h => !h.isStreakable);
 
   const filters: { id: FilterType; label: string; icon: React.ReactNode; count: number }[] = [
     { id: 'all', label: 'All', icon: null, count: habits.length },
-    { id: 'daily', label: 'Daily', icon: <Flame className="w-3 h-3 text-orange-400" />, count: streakableTasks.length },
-    { id: 'onetime', label: 'One-time', icon: <Circle className="w-3 h-3 text-blue-400" />, count: additionalTasks.length },
-    { id: 'completed', label: 'Done', icon: <CheckCircle2 className="w-3 h-3 text-green-400" />, count: completedTasks.length },
+    { id: 'daily', label: 'Daily', icon: <Flame className="w-3.5 h-3.5 text-orange-400" />, count: streakableTasks.length },
+    { id: 'onetime', label: 'One-time', icon: <Circle className="w-3.5 h-3.5 text-blue-400" />, count: additionalTasks.length },
+    { id: 'completed', label: 'Done', icon: <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />, count: completedTasks.length },
   ];
 
+  const currentFilter = filters[filterIndex];
+
+  const setFilter = (index: number) => {
+    setDirection(index > filterIndex ? 1 : -1);
+    setFilterIndex(index);
+  };
+
+  const onDragEnd = (e: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
+    const swipeConfidenceThreshold = 10000;
+    const swipePower = Math.abs(offset.x) * velocity.x;
+
+    if (swipePower < -swipeConfidenceThreshold) {
+       // Swipe Left -> Next Tab
+       if (filterIndex < filters.length - 1) {
+         setFilter(filterIndex + 1);
+       }
+    } else if (swipePower > swipeConfidenceThreshold) {
+      // Swipe Right -> Prev Tab
+      if (filterIndex > 0) {
+        setFilter(filterIndex - 1);
+      }
+    }
+  };
+
   const getFilteredTasks = () => {
-    switch (filter) {
+    switch (currentFilter.id) {
       case 'daily': return streakableTasks;
       case 'onetime': return additionalTasks;
       case 'completed': return completedTasks;
@@ -77,140 +122,169 @@ export function MobileTaskList({
 
   const filteredTasks = getFilteredTasks();
 
+  // Scroll active pill into view
+  const filtersContainerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (filtersContainerRef.current) {
+        const activeBtn = filtersContainerRef.current.children[filterIndex] as HTMLElement;
+        if(activeBtn) {
+            activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    }
+  }, [filterIndex]);
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Filter Pills */}
-      <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
-        {filters.map(f => (
+      <div 
+        ref={filtersContainerRef}
+        className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar shrink-0"
+      >
+        {filters.map((f, index) => (
           <button
             key={f.id}
-            onClick={() => setFilter(f.id)}
+            onClick={() => setFilter(index)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all",
-              filter === f.id
-                ? "bg-surface-dark-lighter text-white border border-white/10"
-                : "bg-transparent text-gray-500 border border-transparent"
+              "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-300 relative",
+              filterIndex === index
+                ? "text-white"
+                : "text-gray-500 hover:text-gray-400"
             )}
           >
-            {f.icon}
-            {f.label}
-            <span className="text-[10px] opacity-60">({f.count})</span>
+             {filterIndex === index && (
+                <motion.div
+                    layoutId="activeFilterPill"
+                    className="absolute inset-0 bg-surface-dark-lighter border border-white/10 rounded-xl"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+            )}
+            <span className="relative z-10 flex items-center gap-1.5">
+                {f.icon}
+                {f.label}
+                <span className={cn("text-[10px] transition-opacity duration-300", filterIndex === index ? "opacity-60" : "opacity-40")}>
+                    ({f.count})
+                </span>
+            </span>
           </button>
         ))}
       </div>
 
-      {/* Task List */}
-      <div className="flex-1 overflow-y-auto px-4 pb-[100px]">
-        <AnimatePresence mode="wait">
-          {filter === 'completed' ? (
-            // Completed Tasks View
-            completedTasks.length === 0 ? (
-              <motion.div
-                key="empty-completed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-16"
-              >
-                <CheckCircle2 className="w-12 h-12 text-gray-600 mb-4" />
-                <p className="text-gray-400 font-medium">No Completed Tasks</p>
-                <p className="text-sm text-gray-600">Complete One-Time tasks to see them here</p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="list-completed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col gap-3"
-              >
-                {completedTasks.map((task, index) => (
-                  <motion.div
-                    key={task.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    onClick={() => setTaskToRestore(task)}
-                    className="flex items-center justify-between p-4 bg-surface-dark-lighter/50 rounded-2xl border border-surface-border active:scale-[0.98] transition-transform"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                        <CheckCircle2 className="w-5 h-5 text-green-400" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm text-gray-400 line-through truncate">{task.title}</p>
-                        <p className="text-[10px] text-gray-600 font-mono">
-                          {task.completedAt ? new Date(task.completedAt).toLocaleDateString() : ''}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        variant="ghost"
-                        size="icon"
+      {/* Task List - Swipeable Area */}
+      <div className="flex-1 relative overflow-hidden w-full">
+        <AnimatePresence initial={false} custom={direction} mode="popLayout">
+            <motion.div
+                key={filterIndex}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 }
+                }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.1}
+                onDragEnd={onDragEnd}
+                className="w-full h-full overflow-y-auto px-4 pb-[400px]"
+                // Prevent vertical scroll interruption
+                style={{ touchAction: "pan-y" }} 
+            >
+             {currentFilter.id === 'completed' ? (
+                // Completed Tasks View
+                completedTasks.length === 0 ? (
+                <div
+                    className="flex flex-col items-center justify-center py-20"
+                >
+                    <CheckCircle2 className="w-16 h-16 text-surface-dark-lighter mb-4" />
+                    <p className="text-gray-400 font-medium text-lg">No Completed Tasks</p>
+                    <p className="text-sm text-gray-600 mt-1">Complete tasks to see them here</p>
+                </div>
+                ) : (
+                <div
+                    className="flex flex-col gap-3 pt-1"
+                >
+                    {completedTasks.map((task, index) => (
+                    <div
+                        key={task.id}
                         onClick={() => setTaskToRestore(task)}
-                        className="h-9 w-9 text-gray-500 rounded-xl"
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onDeleteCompletedTask(task.id)}
-                        className="h-9 w-9 text-gray-500 hover:text-red-400 rounded-xl"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                        className="flex items-center justify-between p-4 bg-surface-dark-lighter/50 rounded-2xl border border-surface-border active:scale-[0.98] transition-transform"
+                    >
+                        <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                            <CheckCircle2 className="w-5 h-5 text-green-400" />
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-sm text-gray-400 line-through truncate">{task.title}</p>
+                            <p className="text-[10px] text-gray-600 font-mono">
+                            {task.completedAt ? new Date(task.completedAt).toLocaleDateString() : ''}
+                            </p>
+                        </div>
+                        </div>
+                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setTaskToRestore(task)}
+                            className="h-9 w-9 text-gray-500 rounded-xl"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onDeleteCompletedTask(task.id)}
+                            className="h-9 w-9 text-gray-500 hover:text-red-400 rounded-xl"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                        </div>
                     </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )
-          ) : filteredTasks.length === 0 ? (
-            // Empty State
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-16"
-            >
-              <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Zap className="w-12 h-12 text-gray-600 mb-4" />
-              </motion.div>
-              <p className="text-gray-400 font-medium">
-                {filter === 'all' ? 'No Active Tasks' : filter === 'daily' ? 'No Daily Tasks' : 'No One-Time Tasks'}
-              </p>
-              <p className="text-sm text-gray-600">Tap + to add your first task</p>
+                    ))}
+                </div>
+                )
+            ) : filteredTasks.length === 0 ? (
+                // Empty State
+                <div
+                className="flex flex-col items-center justify-center py-20"
+                >
+                <motion.div
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                >
+                    <Zap className="w-16 h-16 text-surface-dark-lighter mb-4" />
+                </motion.div>
+                <p className="text-gray-400 font-medium text-lg">
+                    {currentFilter.id === 'all' ? 'No Active Tasks' : currentFilter.id === 'daily' ? 'No Daily Tasks' : 'No One-Time Tasks'}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">Tap + to add your first task</p>
+                </div>
+            ) : (
+                // Active Tasks
+                <div
+                    className="flex flex-col gap-3 pt-1"
+                >
+                    {filteredTasks.map((habit, index) => (
+                    <MobileHabitCard
+                        key={habit.id}
+                        habit={habit}
+                        onToggle={habit.isStreakable ? onToggle : onCompleteAdditional}
+                        onDelete={onDelete}
+                        onEdit={onEdit}
+                        onProgress={onProgress}
+                        index={index}
+                    />
+                    ))}
+                </div>
+            )}
             </motion.div>
-          ) : (
-            // Active Tasks
-            <motion.div
-              key={`list-${filter}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col gap-3"
-            >
-              <AnimatePresence mode="popLayout">
-                {filteredTasks.map((habit, index) => (
-                  <MobileHabitCard
-                    key={habit.id}
-                    habit={habit}
-                    onToggle={habit.isStreakable ? onToggle : onCompleteAdditional}
-                    onDelete={onDelete}
-                    onEdit={onEdit}
-                    onProgress={onProgress}
-                    index={index}
-                  />
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          )}
         </AnimatePresence>
       </div>
 
       {/* FAB - Floating Action Button */}
       <motion.button
+        layout
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         whileTap={{ scale: 0.9 }}
