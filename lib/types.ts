@@ -1,4 +1,4 @@
-export type HabitCategory = 'health' | 'work' | 'learning' | 'other';
+export type HabitCategory = 'health' | 'work' | 'study' | 'other';
 
 export interface Habit {
   id: string;

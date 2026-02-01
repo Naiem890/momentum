@@ -26,7 +26,7 @@ interface AddHabitModalProps {
 const categories = [
   { id: 'health' as const, icon: Activity, label: 'Health', color: 'from-green-500 to-emerald-500' },
   { id: 'work' as const, icon: Briefcase, label: 'Work', color: 'from-green-500 to-emerald-500' },
-  { id: 'learning' as const, icon: Brain, label: 'Learn', color: 'from-green-500 to-emerald-500' },
+  { id: 'study' as const, icon: Brain, label: 'Study', color: 'from-green-500 to-emerald-500' },
   { id: 'other' as const, icon: Zap, label: 'Other', color: 'from-green-500 to-emerald-500' },
 ];
 

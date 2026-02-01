@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Habit } from '@/lib/types';
+import { Habit, HabitCategory } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +16,7 @@ interface HeatmapProps {
   habits: Habit[];
 }
 
-type FilterType = 'all' | 'work' | 'health';
+type FilterType = 'all' | HabitCategory;
 
 export function Heatmap({ habits }: HeatmapProps) {
   const [filter, setFilter] = useState<FilterType>('all');
@@ -103,6 +103,8 @@ export function Heatmap({ habits }: HeatmapProps) {
     { id: 'all' as const, label: 'All' },
     { id: 'work' as const, label: 'Work' },
     { id: 'health' as const, label: 'Health' },
+    { id: 'study' as const, label: 'Study' },
+    { id: 'other' as const, label: 'Other' },
   ];
   
   return (

@@ -104,7 +104,7 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
     switch (category) {
       case 'health': return <Activity className="w-5 h-5" />;
       case 'fitness': return <Dumbbell className="w-5 h-5" />;
-      case 'learning': return <Brain className="w-5 h-5" />;
+      case 'study': return <Brain className="w-5 h-5" />;
       case 'work': return <Briefcase className="w-5 h-5" />;
       // For 'other' or unknown, we try to be smart with keywords
       case 'other': 
@@ -210,7 +210,7 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                         const categoryColors = {
                             health: 'bg-emerald-400',
                             work: 'bg-blue-400',
-                            learning: 'bg-purple-400',
+                            study: 'bg-purple-400',
                             other: 'bg-amber-400',
                         };
                         const dotColor = categoryColors[habit.category] || categoryColors.other;
