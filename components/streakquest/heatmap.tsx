@@ -106,12 +106,15 @@ export function Heatmap({ habits }: HeatmapProps) {
   ];
   
   return (
-    <div className="bg-surface-dark rounded-3xl p-8 shadow-sm">
+    <div className="bg-surface-dark rounded-3xl p-6 shadow-xl border border-white/5">
        
        {/* Header */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
            <div className="flex items-center gap-4">
-               <h3 className="font-semibold text-lg text-white">Activity Heatmap</h3>
+               <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-3">
+                 <div className="w-2 h-2 rounded-full bg-primary" />
+                 Activity Heatmap
+               </h3>
            </div>
 
            <div className='flex items-center gap-4'>

@@ -485,13 +485,15 @@ export default function MomentumDashboard() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-surface-dark rounded-3xl p-8 flex-1 shadow-sm flex flex-col min-h-0 overflow-hidden"
+                  className="bg-surface-dark rounded-3xl p-6 flex-1 shadow-xl border border-white/5 flex flex-col min-h-0 overflow-hidden"
                 >
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
-                            <h3 className="font-semibold text-lg text-white">Active Protocols</h3>
+                            <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-3">
+                              Active Tasks
+                            </h3>
                             <motion.span 
-                              className="px-2 py-0.5 rounded-full bg-surface-dark-lighter text-xs font-mono font-bold text-gray-500"
+                              className="px-2 py-0.5 rounded-full bg-surface-dark-lighter text-xs font-mono font-bold text-gray-500 border border-white/5"
                               key={habits.length}
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
@@ -515,7 +517,7 @@ export default function MomentumDashboard() {
                               >
                                 <Plus className="w-4 h-4" />
                               </motion.div>
-                              New Protocol
+                              New Task
                           </Button>
                         </motion.div>
                     </div>
@@ -667,7 +669,7 @@ export default function MomentumDashboard() {
                                 <Zap className="w-12 h-12 text-surface-border mb-4 group-hover:text-primary/50 transition-colors" />
                               </motion.div>
                               <h4 className="text-gray-400 font-medium mb-1">
-                                {taskFilter === 'all' ? 'No Active Protocols' : taskFilter === 'daily' ? 'No Daily Tasks' : 'No One Time Tasks'}
+                                {taskFilter === 'all' ? 'No Active Tasks' : taskFilter === 'daily' ? 'No Daily Tasks' : 'No One Time Tasks'}
                               </h4>
                               <p className="text-sm text-gray-600">
                                 {taskFilter === 'daily' ? 'Add daily tasks that build your streak.' : 'Add tasks to get started.'}

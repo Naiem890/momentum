@@ -17,7 +17,7 @@ export function StreakCard({ streak, className }: StreakCardProps) {
       animate={{ opacity: 1 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
       className={cn(
-        "relative bg-surface-dark rounded-3xl p-6 flex flex-col justify-between h-[240px] shadow-2xl overflow-hidden group shrink-0 border border-white/5",
+        "relative bg-surface-dark rounded-3xl p-6 flex flex-col justify-between h-[240px] shadow-xl overflow-hidden group shrink-0 border border-white/5",
         className
       )}
     >
@@ -58,7 +58,7 @@ export function StreakCard({ streak, className }: StreakCardProps) {
                     className="flex items-center gap-2"
                 >
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-primary/80 uppercase">Current Streak</span>
+                    <span className="text-[11px] font-mono font-bold tracking-[0.2em] text-gray-500 uppercase">Current Streak</span>
                 </motion.div>
             </div>
             

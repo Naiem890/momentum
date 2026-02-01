@@ -35,16 +35,16 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
 
 
   return (
-    <Card className="h-full bg-surface-dark border border-white/5 shadow-2xl flex flex-col overflow-hidden rounded-3xl relative group">
+    <Card className="h-full bg-surface-dark border border-white/5 shadow-xl flex flex-col overflow-hidden rounded-3xl relative group">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]" />
       <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
       
-      <div className="relative z-10 px-5 py-3">
+      <div className="relative z-10 px-6 py-6">
           {/* Section 1: Focus / Current Objective */}
           <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-white tracking-widest uppercase opacity-90">Milestones & Badges</h3>
+                  <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-gray-500">Milestones & Badges</h3>
                   <div className={cn(
                       "px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border flex items-center gap-1.5",
                       isMastered 

@@ -68,14 +68,14 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
 
   return (
     <div className="w-full flex-1 flex flex-col min-h-0">
-      <div className="bg-surface-dark rounded-3xl p-5 relative overflow-hidden border border-white/5 flex flex-col shadow-lg h-full">
+      <div className="bg-surface-dark rounded-3xl p-6 relative overflow-hidden border border-white/5 flex flex-col shadow-xl h-full">
          
          {/* Background Decoration */}
          <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-transparent to-[#0a0a0a]" />
 
          {/* Header */}
          <div className="relative z-10 flex items-center justify-between mb-6">
-            <h2 className="text-xs font-bold text-white tracking-widest uppercase opacity-90">Weekly Progress</h2>
+            <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-gray-500">Weekly Progress</h2>
          </div>
 
          <div className="flex items-start justify-between relative z-10 w-full flex-1">
