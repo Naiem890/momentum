@@ -1,115 +1,67 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Quote as QuoteType } from '@/lib/quotes';
-import { Flame, RefreshCw, Quote } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Flame, CheckCircle2 } from 'lucide-react';
+import { Habit } from '@/lib/types';
+import { AuthButton } from '@/components/auth';
 
 interface MobileHeaderProps {
-  quote: QuoteType;
-  isQuoteLoading: boolean;
-  onRefreshQuote: () => void;
+  currentStreak: number;
+  habits: Habit[];
 }
 
-export function MobileHeader({ quote, isQuoteLoading, onRefreshQuote }: MobileHeaderProps) {
+export function MobileHeader({ currentStreak, habits }: MobileHeaderProps) {
+  // Calculate daily progress
+  const streakableHabits = habits.filter(h => h.isStreakable);
+  const totalDaily = streakableHabits.length;
+  
+  const today = new Date().toISOString().split('T')[0];
+  const completedDaily = streakableHabits.filter(h => 
+    h.completedDates.includes(today)
+  ).length;
+
+  // Visual Streak Logic: Match StreakCard
+  // If some tasks are done but not all, show currentStreak - 1 (filling up state)
+  const isPartiallyComplete = totalDaily > 0 && completedDaily > 0 && completedDaily < totalDaily;
+  const visualStreak = isPartiallyComplete ? Math.max(0, currentStreak - 1) : currentStreak;
+
   return (
     <div 
-      className="px-4 pt-4 pb-4"
+      className="px-4 pt-4 pb-3 bg-background-dark/95 backdrop-blur-md sticky top-0 z-40 border-b border-white/5"
       style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
     >
-      {/* Branding Row - Larger */}
-      <div className="flex items-center justify-between mb-4">
-        <motion.div 
-          className="flex items-center gap-3"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <motion.div
-            animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20"
-          >
-            <Flame className="w-6 h-6 text-primary" />
-          </motion.div>
-          <div>
-            <span className="text-white font-bold text-lg tracking-tight">
-              Momentum
-            </span>
-            <span className="block text-[10px] text-gray-500 font-mono uppercase tracking-widest">
-              Daily Progress
-            </span>
-          </div>
-        </motion.div>
-        
-        <motion.button 
-          className="px-3 py-1.5 text-[10px] text-primary/70 border border-primary/20 rounded-lg uppercase font-mono font-bold bg-primary/5"
-          animate={{ opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        >
-          Focus Mode
-        </motion.button>
-      </div>
-
-      {/* Quote Section - Desktop-style gradient */}
-      <motion.div 
-        className="relative overflow-hidden rounded-2xl"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        {/* Gradient Background like desktop */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-surface-dark to-surface-dark border border-primary/20 rounded-2xl" />
-        
-        {/* Animated glow orb */}
-        <motion.div 
-          className="absolute -right-10 -bottom-10 w-32 h-32 bg-primary/15 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        />
-        
-        <div className="relative z-10 p-4">
-          {/* Quote marks */}
-          <Quote className="absolute top-3 left-3 w-5 h-5 text-primary/30 rotate-180" />
-          
-          <div className="pl-6 pr-10">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={quote.text}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <p 
-                  className="text-base text-white leading-relaxed italic font-medium"
-                  style={{ fontFamily: 'var(--font-quote), serif' }}
-                >
-                  {quote.text}
-                </p>
-                <span className="text-xs text-gray-400 font-mono mt-2 block">
-                  — {quote.author}
-                </span>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          
-          <Quote className="absolute bottom-3 right-12 w-5 h-5 text-primary/30" />
-          
-          {/* Refresh Button */}
-          <button
-            onClick={onRefreshQuote}
-            disabled={isQuoteLoading}
-            className="absolute top-1/2 -translate-y-1/2 right-3 p-2.5 text-primary/50 hover:text-primary transition-colors rounded-xl hover:bg-primary/10 active:scale-95"
-          >
-            <motion.div
-              animate={isQuoteLoading ? { rotate: 360 } : { rotate: 0 }}
-              transition={isQuoteLoading ? { duration: 1, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
-            >
-              <RefreshCw className="w-5 h-5" />
-            </motion.div>
-          </button>
+      <div className="flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center gap-2 font-mono text-sm tracking-wider">
+          <Flame className="w-5 h-5 text-primary" />
+          <span className="text-gray-400 font-semibold">Momentum</span>
         </div>
-      </motion.div>
+
+        {/* Right Side: Stats & Auth */}
+        <div className="flex items-center gap-3">
+            {/* Stats - Only show if there are habits */}
+            {totalDaily > 0 && (
+                <div className="flex items-center gap-3 mr-1">
+                    {/* Streak Count */}
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-surface-dark border border-white/5">
+                        <Flame className="w-3.5 h-3.5 text-orange-500 fill-orange-500/20" />
+                        <span className="text-xs font-bold text-orange-100">{visualStreak}</span>
+                    </div>
+
+                    {/* Daily Progress */}
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-surface-dark border border-white/5">
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${completedDaily === totalDaily ? 'text-green-500' : 'text-primary'}`} />
+                        <span className="text-xs font-bold text-gray-200">
+                            {completedDaily}/{totalDaily}
+                        </span>
+                    </div>
+                </div>
+            )}
+            
+            <AuthButton />
+        </div>
+      </div>
     </div>
   );
 }

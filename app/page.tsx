@@ -46,6 +46,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useHabits } from '@/hooks/use-habits';
 import { useStats } from '@/hooks/use-stats';
 import { MobileNavigation } from '@/components/streakquest/mobile-navigation';
+import { MobileHeader } from '@/components/streakquest/mobile-header';
 import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
 import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
 import { MobileAddTaskDrawer } from '@/components/streakquest/mobile-add-task-drawer';
@@ -233,21 +234,8 @@ export default function MomentumDashboard() {
         {/* Celebration */}
         <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
         
-        {/* Mobile Header - Simple, matching desktop */}
-        {mobileTab === 'tasks' && (
-          <div 
-            className="px-4 pt-4 pb-3"
-            style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 font-mono text-sm tracking-wider">
-                <Flame className="w-5 h-5 text-primary" />
-                <span className="text-gray-400 font-semibold">Momentum</span>
-              </div>
-              <AuthButton />
-            </div>
-          </div>
-        )}
+        {/* Mobile Header - Shared Stats Header */}
+        <MobileHeader currentStreak={currentStreak} habits={habits} />
         
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">

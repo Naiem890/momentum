@@ -29,14 +29,8 @@ export function MobileStatsView({
 }: MobileStatsViewProps) {
   return (
     <div 
-      className="flex flex-col gap-4 px-4 pb-[100px] overflow-y-auto"
-      style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
+      className="flex flex-col gap-4 px-4 pb-[100px] pt-4 overflow-y-auto"
     >
-      {/* Header - matching desktop */}
-      <div className="flex items-center gap-2 font-mono text-sm tracking-wider mb-1">
-        <Flame className="w-5 h-5 text-primary" />
-        <span className="text-gray-400 font-semibold">Momentum</span>
-      </div>
 
       {/* Quote Section - Desktop-style gradient */}
       <motion.div 
