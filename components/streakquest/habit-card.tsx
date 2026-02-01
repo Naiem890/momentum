@@ -308,7 +308,7 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                             <Pencil className="w-4 h-4" />
                         </Button>
                     </TooltipTrigger>
-                    <TooltipContent><p>Edit Protocol</p></TooltipContent>
+                    <TooltipContent><p>Edit Task</p></TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
 
@@ -327,13 +327,13 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                                 </Button>
                             </AlertDialogTrigger>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-red-500 border-red-600 text-white fill-red-500">Delete Protocol</TooltipContent>
+                        <TooltipContent className="bg-red-500 border-red-600 text-white fill-red-500">Delete Task</TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                     
                     <AlertDialogContent className="bg-surface-dark border-surface-border text-white">
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Protocol?</AlertDialogTitle>
+                            <AlertDialogTitle>Delete Task?</AlertDialogTitle>
                             <AlertDialogDescription className="text-gray-400">
                                 This will permanently delete <span className="text-white font-bold">"{habit.title}"</span>.
                             </AlertDialogDescription>

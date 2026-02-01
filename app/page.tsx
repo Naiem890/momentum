@@ -480,7 +480,7 @@ export default function MomentumDashboard() {
             {/* Right Column (Span 8) */}
             <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-hidden">
                 
-                {/* Active Protocols */}
+                {/* Active Tasks */}
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

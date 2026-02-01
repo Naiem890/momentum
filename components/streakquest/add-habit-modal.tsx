@@ -25,9 +25,9 @@ interface AddHabitModalProps {
 
 const categories = [
   { id: 'health' as const, icon: Activity, label: 'Health', color: 'from-green-500 to-emerald-500' },
-  { id: 'work' as const, icon: Briefcase, label: 'Work', color: 'from-blue-500 to-cyan-500' },
-  { id: 'learning' as const, icon: Brain, label: 'Learn', color: 'from-purple-500 to-pink-500' },
-  { id: 'other' as const, icon: Zap, label: 'Other', color: 'from-amber-500 to-orange-500' },
+  { id: 'work' as const, icon: Briefcase, label: 'Work', color: 'from-green-500 to-emerald-500' },
+  { id: 'learning' as const, icon: Brain, label: 'Learn', color: 'from-green-500 to-emerald-500' },
+  { id: 'other' as const, icon: Zap, label: 'Other', color: 'from-green-500 to-emerald-500' },
 ];
 
 const containerVariants = {
@@ -35,19 +35,19 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.05,
       delayChildren: 0.1
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.9 },
+  hidden: { opacity: 0, y: 10, scale: 0.98 },
   visible: { 
     opacity: 1, 
     y: 0, 
     scale: 1,
-    transition: { type: "spring" as const, stiffness: 300, damping: 24 }
+    transition: { duration: 0.4, ease: "easeOut" as const }
   }
 };
 
@@ -110,29 +110,30 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="bg-surface-dark border-surface-border sm:max-w-xl overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
               <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, ease: "backOut" }}
               >
                 {isEditing ? <Pencil className="w-5 h-5 text-primary" /> : <Sparkles className="w-5 h-5 text-primary" />}
               </motion.div>
-              {isEditing ? 'Edit Protocol' : 'New Protocol'}
+              {isEditing ? 'Edit Task' : 'New Task'}
             </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6 mt-4">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
             >
-              <label className="block text-sm font-medium text-text-muted mb-2">Protocol Name</label>
+              <label className="block text-sm font-medium text-text-muted mb-2">Task Name</label>
               <motion.div whileFocus={{ scale: 1.01 }}>
                 <Input
                   type="text"
@@ -159,8 +160,8 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                     <motion.div
                       key={cat.id}
                       variants={itemVariants}
-                      whileHover={{ scale: 1.03, y: -2 }}
-                      whileTap={{ scale: 0.97 }}
+                      whileHover={{ scale: 1.01, y: -1 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       <Button
                         type="button"
@@ -187,10 +188,9 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                       
                       <motion.div
                         animate={isSelected ? { 
-                          rotate: [0, -10, 10, 0],
-                          scale: [1, 1.1, 1]
+                          scale: [1, 1.05, 1]
                         } : {}}
-                        transition={{ duration: 0.4 }}
+                        transition={{ duration: 0.3 }}
                         className={cn(
                           "relative z-10 p-2 rounded-lg transition-colors",
                           isSelected ? "bg-primary/20 text-primary" : "bg-surface-dark-lighter text-gray-500"
@@ -368,21 +368,11 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                   whileTap={{ scale: 0.98 }}
                 >
                   {isEditing ? <Pencil className="w-4 h-4" /> : <Sparkles className="w-4 h-4 group-hover:animate-pulse" />}
-                  {isEditing ? 'Update Protocol' : 'Initialize Protocol'}
+                  {isEditing ? 'Update Task' : 'Initialize Task'}
                 </motion.span>
                 
-                {/* Shine effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                  initial={{ x: '-100%' }}
-                  animate={{ x: '100%' }}
-                  transition={{ 
-                    duration: 1.5, 
-                    repeat: Infinity, 
-                    repeatDelay: 2,
-                    ease: "easeInOut"
-                  }}
-                />
+                {/* Shine effect - Removed infinite loop, subtle on hover only or one-time? Removed for "premium subtle" request */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:animate-shine" />
               </Button>
             </motion.div>
           </form>
