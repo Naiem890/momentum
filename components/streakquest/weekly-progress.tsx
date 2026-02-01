@@ -4,9 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Habit } from '@/lib/types';
 import { cn } from '@/lib/utils';
-
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Check } from 'lucide-react';
 
 interface WeeklyProgressProps {
   habits: Habit[];
@@ -16,155 +14,124 @@ interface WeeklyProgressProps {
 export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps) {
   const today = new Date();
   
+  // Calculate Start of Week (Monday)
+  const currentDay = today.getDay(); // 0=Sun, 1=Mon...
+  const diffToMonday = currentDay === 0 ? 6 : currentDay - 1; 
+  const mondayDate = new Date(today);
+  mondayDate.setDate(today.getDate() - diffToMonday);
+
   const days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(today.getDate() - (6 - i));
+    const d = new Date(mondayDate);
+    d.setDate(mondayDate.getDate() + i);
     return d;
   });
 
   const getDayStatus = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
-    const isToday = dateStr === today.toISOString().split('T')[0];
-    const completedCount = habits.filter(h => h.completedDates.includes(dateStr)).length;
-    const totalHabits = habits.length;
-    const isComplete = totalHabits > 0 && completedCount > 0;
-    const completionRate = totalHabits > 0 ? completedCount / totalHabits : 0;
-
-    return { dateStr, isToday, isComplete, completionRate, dayName: date.toLocaleDateString('en-US', { weekday: 'short' }) };
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // Future Check
+    const isFuture = date > today && dateStr !== todayStr;
+    
+    const isToday = dateStr === todayStr;
+    
+    // Progress Calculation
+    // For "Completed", we check if ALL daily habits were completed? 
+    // Or just if *any* streakable habit was maintained?
+    // Let's stick to: "Did I miss anything?" 
+    // Ideally: Count streakable habits. If > 0 and all completed -> Success.
+    
+    // For simplicity and leniency (matches typical habit apps):
+    // If I had habits that day and completed "most" or "all" of them.
+    // Let's use logic: If any habit completed that day? No, that's too easy.
+    // Logic: Total Streakable Habits for that day > 0 AND Completed Count >= Total Streakable.
+    
+    // However, finding exact historical count is hard without historical logs of "active habits at that time".
+    // We will just approximate with CURRENT streakable habits.
+    const streakableHabits = habits.filter(h => h.isStreakable);
+    const completedCount = streakableHabits.filter(h => h.completedDates.includes(dateStr)).length;
+    const totalHabits = streakableHabits.length;
+    
+    // Success: I had habits and I did them all. 
+    // Partial: I did some.
+    // Fail: I did none.
+    
+    // Design has binary state basically: Check or Empty.
+    // Let's go with: >= 1 completed is a "success" for visual gratification in this simple view, 
+    // OR strict: CompletedCount === TotalHabits. 
+    // Let's try Strict for "Green Check".
+    
+    const isComplete = totalHabits > 0 && completedCount >= totalHabits; 
+    
+    return { dateStr, isToday, isFuture, isComplete, dayName: date.toLocaleDateString('en-US', { weekday: 'short' }) };
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-    >
-      <Card className={cn("bg-surface-dark border-none shadow-sm rounded-3xl", compact ? "p-0" : "p-0")}>
-        {!compact && (
-          <CardHeader className="flex-row items-center justify-between p-8 pb-0">
-              <CardTitle className="font-semibold text-lg text-white">Weekly Progress</CardTitle>
-              <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary text-xs font-mono font-bold uppercase tracking-wider">
-                <motion.span 
-                  animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  Last 7 Days
-                </motion.span>
-              </Badge>
-          </CardHeader>
-        )}
+    <div className="w-full flex-1 flex flex-col min-h-0">
+      <div className="bg-surface-dark rounded-3xl p-5 relative overflow-hidden border border-white/5 flex flex-col shadow-lg h-full">
+         
+         {/* Background Decoration */}
+         <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-transparent to-[#0a0a0a]" />
 
-        {compact && (
-             <div className="flex justify-between items-center mb-3 p-6 pb-0">
-               <h3 className="font-bold text-sm text-gray-400 uppercase tracking-widest font-mono">Last 7 Days</h3>
-               <div className="h-[1px] flex-1 bg-surface-border ml-4 opacity-50" />
-             </div>
-        )}
+         {/* Header */}
+         <div className="relative z-10 flex items-center justify-between mb-6">
+            <h2 className="text-xs font-bold text-white tracking-widest uppercase opacity-90">Weekly Progress</h2>
+         </div>
 
-        {/* Timeline */}
-        <CardContent className={cn("relative", compact ? "p-6 pt-1 pb-1" : "p-8 pt-2 pb-8")}>
-            {/* Background Line */}
-            <motion.div 
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.3, duration: 0.5, ease: "easeOut" }}
-              className={cn("absolute left-0 w-full h-0.5 bg-surface-border z-0 origin-left", compact ? "top-[18px]" : "top-[28px]")}
-            />
+         <div className="flex items-start justify-between relative z-10 w-full flex-1">
+            {days.map((date, index) => {
+               const { isToday, isFuture, isComplete, dayName } = getDayStatus(date);
+               
+               return (
+                 <div key={index} className="flex flex-col items-center gap-3 relative flex-1 group">
 
-            {/* Progress Line */}
-            <motion.div 
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-              className={cn("absolute left-0 h-0.5 bg-gradient-to-r from-primary/50 to-primary z-0 origin-left", compact ? "top-[18px]" : "top-[28px]")}
-              style={{ width: `${(6/7) * 100}%` }}
-            />
+                    {/* Indicator Shape - Squaricle (Rounded Square) */}
+                    <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                        {isToday ? (
+                           // Today state
+                           <div className="w-[42px] h-[42px] rounded-xl border-2 border-dashed border-primary flex items-center justify-center bg-primary/5 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                               {isComplete ? (
+                                   <div className="w-full h-full rounded-lg bg-primary flex items-center justify-center">
+                                       <Check className="w-5 h-5 text-black stroke-[3]" />
+                                   </div>
+                               ) : (
+                                   <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
+                               )}
+                           </div>
+                        ) : isComplete ? (
+                           // Completed state
+                           <motion.div 
+                             initial={{ scale: 0.8, opacity: 0 }}
+                             animate={{ scale: 1, opacity: 1 }}
+                             className="w-[42px] h-[42px] rounded-xl bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-primary"
+                           >
+                              <Check className="w-5 h-5 text-black stroke-[3]" />
+                           </motion.div>
+                        ) : (
+                           // Incomplete / Future state
+                           <div className={cn(
+                               "w-[42px] h-[42px] rounded-xl flex items-center justify-center border transition-colors duration-300",
+                               isFuture 
+                                 ? "bg-surface-dark-lighter/30 border-white/5 text-gray-700" 
+                                 : "bg-surface-dark-lighter border-white/10 text-gray-500" // Past Incomplete
+                           )}>
+                              {/* Past Incomplete could show a small dot or nothing. Let's keep it empty for clean look. */}
+                           </div>
+                        )}
+                    </div>
 
-            <div className="relative z-10 flex justify-between w-full">
-                {days.map((date, index) => {
-                    const { isToday, isComplete, completionRate, dayName } = getDayStatus(date);
-                    
-                    if (isToday) {
-                        return (
-                          <motion.div 
-                            key={index} 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ 
-                              delay: 0.3 + index * 0.08,
-                              type: "spring",
-                              stiffness: 500,
-                              damping: 20
-                            }}
-                            className={cn("flex flex-col items-center gap-3", compact ? "-mt-1" : "-mt-2")}
-                          >
-                              <motion.div 
-                                className={cn(
-                                    "rounded-full border-2 border-primary flex items-center justify-center bg-surface-dark relative shadow-[0_0_20px_rgba(16,185,129,0.4)]",
-                                    compact ? "w-6 h-6 border-[1.5px]" : "w-8 h-8"
-                                )}
-                                animate={{ 
-                                  boxShadow: [
-                                    "0 0 15px rgba(16,185,129,0.4)",
-                                    "0 0 25px rgba(16,185,129,0.6)",
-                                    "0 0 15px rgba(16,185,129,0.4)"
-                                  ]
-                                }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                              >
-                                  <motion.div 
-                                    className={cn("bg-primary rounded-full", compact ? "w-1.5 h-1.5" : "w-2.5 h-2.5")}
-                                    animate={{ 
-                                      opacity: [1, 0.8, 1]
-                                    }}
-                                    transition={{ duration: 1.5, repeat: Infinity }}
-                                  />
-                              </motion.div>
-                              <motion.span 
-                                className={cn("text-white font-bold font-mono", compact ? "text-[10px]" : "text-xs")}
-                                animate={{ opacity: [0.8, 1, 0.8] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                              >
-                                {compact ? dayName : "Today"}
-                              </motion.span>
-                          </motion.div>
-                        );
-                    }
-
-                    return (
-                          <motion.div 
-                            key={index} 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ 
-                              delay: 0.3 + index * 0.08,
-                              type: "spring",
-                              stiffness: 500,
-                              damping: 20
-                            }}
-                            className="flex flex-col items-center gap-4 group cursor-pointer"
-                        >
-                            <motion.div 
-                              className={cn(
-                                  "rounded-full border-[3px] border-surface-dark transition-all duration-300 z-10",
-                                  compact ? "w-3 h-3 border-[2px]" : "w-4 h-4",
-                                  isComplete 
-                                    ? completionRate >= 1 
-                                      ? "bg-primary scale-110 shadow-[0_0_10px_rgba(16,185,129,0.5)]" 
-                                      : "bg-primary/60" 
-                                    : "bg-gray-600 group-hover:bg-gray-500"
-                              )}
-
-                            />
-                            <span className={cn("text-gray-600 font-mono group-hover:text-gray-400 transition-colors", compact ? "text-[10px]" : "text-xs")}>
-                                {dayName}
-                            </span>
-                        </motion.div>
-                    );
-                })}
-            </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+                    {/* Day Name */}
+                    <span className={cn(
+                      "font-mono text-xs uppercase tracking-wider transition-colors duration-300",
+                      isToday ? "text-primary font-bold" : "text-gray-500 group-hover:text-gray-400"
+                    )}>
+                       {dayName}
+                    </span>
+                 </div>
+               );
+            })}
+         </div>
+      </div>
+    </div>
   );
 }

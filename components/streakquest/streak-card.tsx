@@ -17,7 +17,7 @@ export function StreakCard({ streak, className }: StreakCardProps) {
       animate={{ opacity: 1 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
       className={cn(
-        "relative bg-surface-dark rounded-3xl p-8 flex flex-col justify-between h-[280px] shadow-2xl overflow-hidden group shrink-0 border border-white/5",
+        "relative bg-surface-dark rounded-3xl p-6 flex flex-col justify-between h-[240px] shadow-2xl overflow-hidden group shrink-0 border border-white/5",
         className
       )}
     >
@@ -58,12 +58,12 @@ export function StreakCard({ streak, className }: StreakCardProps) {
                     className="flex items-center gap-2"
                 >
                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-xs font-mono font-bold tracking-[0.2em] text-primary/80 uppercase">Current Streak</span>
+                    <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-primary/80 uppercase">Current Streak</span>
                 </motion.div>
             </div>
             
             <motion.span 
-              className="font-mono text-4xl font-black text-white/5 select-none"
+              className="font-mono text-xl font-black text-white/5 select-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -73,9 +73,9 @@ export function StreakCard({ streak, className }: StreakCardProps) {
         </div>
 
         {/* Center Section: Big Number */}
-        <div className="relative z-10 flex-1 flex items-center">
+        <div className="relative z-10 flex-1 flex items-center justify-center -mt-2">
             <motion.h1 
-              className="text-[9rem] leading-none font-bold font-mono tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50 drop-shadow-2xl"
+              className="text-[6rem] leading-none font-bold font-mono tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50 drop-shadow-2xl"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
@@ -87,13 +87,13 @@ export function StreakCard({ streak, className }: StreakCardProps) {
         {/* Bottom Section: Status Text */}
         <div className="relative z-10">
             <motion.div 
-              className="flex items-center gap-3"
+              className="flex items-center gap-2"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <div className="h-px w-8 bg-gradient-to-r from-primary to-transparent" />
-              <span className="text-gray-400 font-mono text-xs tracking-wider uppercase">
+              <div className="h-px w-6 bg-gradient-to-r from-primary to-transparent" />
+              <span className="text-gray-400 font-mono text-[10px] tracking-wider uppercase">
                   Keep the momentum
               </span>
             </motion.div>

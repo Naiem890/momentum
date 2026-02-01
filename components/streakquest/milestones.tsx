@@ -40,7 +40,7 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
       <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]" />
       <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
       
-      <div className="relative z-10 px-5 py-4">
+      <div className="relative z-10 px-5 py-3">
           {/* Section 1: Focus / Current Objective */}
           <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
@@ -89,7 +89,7 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
           </div>
 
           {/* Section 2: Trophy Shelf / Timeline (Only shown if started) */}
-            <div className="pt-4"> 
+            <div className="pt-3"> 
                 <div className="flex items-center justify-between mb-2">
                    <span className="text-[10px] text-gray-500 font-mono tracking-wider uppercase">Journey</span>
                    <span className="text-[10px] text-primary font-mono">{earnedBadges.length} / {badges.length}</span>
