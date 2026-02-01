@@ -165,7 +165,7 @@ export function useHabits(): UseHabitsReturn {
     const task = completedTasks.find(t => t.id === id);
     if (!task) return;
     
-    await updateHabit(id, { completedAt: undefined });
+    await updateHabit(id, { completedAt: null });
     
     setCompletedTasks(prev => prev.filter(t => t.id !== id));
     const { completedAt, ...activeTask } = task;
