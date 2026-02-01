@@ -388,6 +388,70 @@ export default function MomentumDashboard() {
         </div>
       </motion.nav>
 
+      {/* Quote of the Day - Full Width Top Row */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="relative overflow-hidden rounded-3xl p-4 flex items-center justify-center shadow-lg min-h-[180px] shrink-0 group max-w-[1400px] w-full mx-auto mb-6"
+      >
+          {/* Background Gradient & Effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-surface-dark to-surface-dark border border-primary/20 transition-all duration-500 group-hover:border-primary/40 rounded-3xl" />
+          
+          <motion.div 
+            className="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
+          />
+
+          <div className="relative z-10 flex flex-col items-center text-center mx-auto w-full">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="flex items-center justify-between w-full mb-4 px-4"
+              >
+                  <div className="w-8" /> {/* Spacer */}
+                  <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Quote of the day</span>
+                  
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => loadNewQuote(true)}
+                    disabled={isQuoteLoading}
+                    className="text-primary/50 hover:text-primary hover:bg-primary/10 transition-colors w-8 h-8 rounded-full"
+                  >
+                      <motion.div
+                        animate={isQuoteLoading ? { rotate: 360 } : { rotate: 0 }}
+                        transition={isQuoteLoading ? { duration: 1, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </motion.div>
+                  </Button>
+              </motion.div>
+
+              <div className="relative px-8">
+                  <Quote className="absolute -top-2 left-0 w-6 h-6 text-primary/30 rotate-180" />
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={quote.text}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="flex flex-col items-center gap-4"
+                    >
+                      <p 
+                        className="text-xl md:text-2xl font-display text-white leading-tight tracking-wide drop-shadow-md"
+                        style={{ fontStyle: 'italic' }} 
+                      >
+                        {quote.text}
+                      </p>
+                      <span className="text-gray-400 font-mono text-sm tracking-wider opacity-80">— {quote.author}</span>
+                    </motion.div>
+                  </AnimatePresence>
+                  <Quote className="absolute bottom-4 right-0 w-6 h-6 text-primary/30" />
+              </div>
+          </div>
+      </motion.div>
+
       {/* Main Grid */}
       <div className="flex-1 min-h-0 w-full max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
@@ -473,71 +537,6 @@ export default function MomentumDashboard() {
             {/* Right Column (Span 8) */}
             <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-hidden">
                 
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="relative overflow-hidden rounded-3xl p-8 flex items-center justify-center shadow-lg min-h-[180px] shrink-0 group m-1"
-                >
-                    {/* Background Gradient & Effects */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-surface-dark to-surface-dark border border-primary/20 transition-all duration-500 group-hover:border-primary/40" />
-                    
-                    <motion.div 
-                      className="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
-                    />
-
-                    <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto w-full">
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.2 }}
-                          className="flex items-center justify-between w-full mb-4 px-4"
-                        >
-                            <div className="w-8" /> {/* Spacer */}
-                            <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Quote of the day</span>
-                            
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => loadNewQuote(true)}
-                              disabled={isQuoteLoading}
-                              className="text-primary/50 hover:text-primary hover:bg-primary/10 transition-colors w-8 h-8 rounded-full"
-                            >
-                                <motion.div
-                                  animate={isQuoteLoading ? { rotate: 360 } : { rotate: 0 }}
-                                  transition={isQuoteLoading ? { duration: 1, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
-                                >
-                                  <RefreshCw className="w-4 h-4" />
-                                </motion.div>
-                            </Button>
-                        </motion.div>
-
-                        <div className="relative px-8">
-                            <Quote className="absolute -top-6 -left-2 w-8 h-8 text-primary/20 rotate-180" />
-                            <AnimatePresence mode="wait">
-                              <motion.div
-                                key={quote.text}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.4 }}
-                                className="flex flex-col items-center gap-4"
-                              >
-                                <p 
-                                  className="text-2xl md:text-3xl font-display text-white leading-tight tracking-wide drop-shadow-md"
-                                  style={{ fontStyle: 'italic' }} 
-                                >
-                                  {quote.text}
-                                </p>
-                                <span className="text-gray-400 font-mono text-sm tracking-wider opacity-80">— {quote.author}</span>
-                              </motion.div>
-                            </AnimatePresence>
-                            <Quote className="absolute -bottom-6 -right-2 w-8 h-8 text-primary/20" />
-                        </div>
-                    </div>
-                </motion.div>
-
-
-
                 {/* Active Protocols */}
                 <motion.div 
                   initial={{ opacity: 0 }}
