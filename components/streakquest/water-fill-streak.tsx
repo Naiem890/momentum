@@ -44,8 +44,8 @@ export function WaterFillStreak({ value, progress, className }: WaterFillStreakP
         <defs>
           {/* Gradient for the Liquid */}
           <linearGradient id={`liquidGradient-${id}`} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#34D399" /> {/* Emerald 400 */}
-            <stop offset="100%" stopColor="#10B981" /> {/* Emerald 500 */}
+            <stop offset="0%" stopColor="var(--primary)" style={{ stopOpacity: 0.8 }} /> 
+            <stop offset="100%" stopColor="var(--primary)" /> 
           </linearGradient>
 
           {/* Define the Text as a Clip Path */}
