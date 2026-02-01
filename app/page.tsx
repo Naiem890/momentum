@@ -3,16 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  getHabits, 
-  saveHabits, 
-  getUserStats, 
-  saveUserStats,
-  getDailyQuote,
-  saveDailyQuote,
-  getCompletedTasks,
-  saveCompletedTasks
-} from '@/lib/storage';
+import { getDailyQuote, saveDailyQuote } from '@/lib/storage';
 import { Habit, UserStats, HabitCategory } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { fetchQuote, Quote as QuoteType, MOTIVATIONAL_QUOTES } from '@/lib/quotes';
@@ -52,11 +43,14 @@ import {
 
 // Mobile components
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useHabits } from '@/hooks/use-habits';
+import { useStats } from '@/hooks/use-stats';
 import { MobileNavigation } from '@/components/streakquest/mobile-navigation';
 import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
 import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
 import { MobileAddTaskDrawer } from '@/components/streakquest/mobile-add-task-drawer';
 import { AuthButton, LoginScreen } from '@/components/auth';
+
 
 export default function MomentumDashboard() {
   // --- Auth ---
@@ -65,23 +59,31 @@ export default function MomentumDashboard() {
   // --- Theme ---
   const { theme, toggleTheme } = useTheme();
   
-  // --- Data State ---
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [stats, setStats] = useState<UserStats>({
-    totalHabitsCompleted: 0,
-    longestStreak: 0,
-    lastLogin: new Date().toISOString().split('T')[0]
-  });
+  // --- Data from API ---
+  const {
+    habits,
+    completedTasks,
+    isLoading: habitsLoading,
+    createHabit,
+    updateHabit,
+    deleteHabit,
+    toggleHabit,
+    updateProgress,
+    completeAdditionalTask,
+    restoreTask,
+    deleteCompletedTask,
+  } = useHabits();
+  
+  const { stats, isLoading: statsLoading } = useStats();
+
+  // --- UI State ---
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [previousStreak, setPreviousStreak] = useState(0);
   const [quote, setQuote] = useState<QuoteType>(MOTIVATIONAL_QUOTES[0]);
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
-  const [completedTasks, setCompletedTasks] = useState<Habit[]>([]); // Completed one-time tasks
   const [taskFilter, setTaskFilter] = useState<'all' | 'daily' | 'onetime' | 'completed'>('all');
-  const [taskToRestore, setTaskToRestore] = useState<Habit | null>(null); // For restore confirmation
+  const [taskToRestore, setTaskToRestore] = useState<Habit | null>(null);
   const [mobileTab, setMobileTab] = useState<'tasks' | 'stats'>('tasks');
   
   // Mobile detection
@@ -97,199 +99,63 @@ export default function MomentumDashboard() {
     setIsQuoteLoading(false);
   };
 
-  // Initialization
+  // Load quote on mount
   useEffect(() => {
-    setMounted(true);
-    const loadedHabits = getHabits();
-    const loadedStats = getUserStats();
-    const loadedCompletedTasks = getCompletedTasks();
-    
-    // Load quote (check cache first)
     const todayDateStr = new Date().toISOString().split('T')[0];
     const cached = getDailyQuote();
     
     if (cached && cached.date === todayDateStr) {
       setQuote(cached.quote);
-      setIsQuoteLoading(false);
     } else {
-      loadNewQuote(true); // Fetch and cache for today
+      loadNewQuote(true);
     }
-    
-    // Streak check logic
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-    const updatedHabits = loadedHabits.map(h => {
-      // Backwards compatibility: default isStreakable to true for existing habits
-      const isStreakable = h.isStreakable !== false;
-      
-      // Only reset streak for streakable habits
-      if (isStreakable) {
-        const lastCompleted = h.completedDates[h.completedDates.length - 1];
-        if (lastCompleted && lastCompleted < yesterdayStr) {
-          return { ...h, streak: 0, isStreakable };
-        }
-      }
-      return { ...h, isStreakable };
-    });
-
-    setHabits(updatedHabits);
-    setCompletedTasks(loadedCompletedTasks);
-    
-    // Recalculate stats based on active streakable habits only
-    const streakableHabits = updatedHabits.filter(h => h.isStreakable);
-    const realTotalCompletions = streakableHabits.reduce((acc, h) => acc + h.completedDates.length, 0);
-    const realLongestStreak = Math.max(0, ...streakableHabits.map(h => h.streak), loadedStats.longestStreak > 100 ? 0 : loadedStats.longestStreak);
-    
-    const correctedStats = {
-      ...loadedStats,
-      totalHabitsCompleted: realTotalCompletions,
-      longestStreak: realLongestStreak
-    };
-
-    setStats(correctedStats);
-    setPreviousStreak(Math.max(0, ...streakableHabits.map(h => h.streak)));
-    saveHabits(updatedHabits); 
-    saveUserStats(correctedStats); 
   }, []);
 
-  // --- Habit Logic ---
-  const handleToggleHabit = useCallback((id: string) => {
-    const today = new Date().toISOString().split('T')[0];
-    setHabits(prevHabits => {
-      const habit = prevHabits.find(h => h.id === id);
-      if (!habit) return prevHabits;
-      
-      // Prevent manual toggle for time-based habits (optional, or allow override)
-      if (habit.targetTime && habit.targetTime > 0) {
-        // For now, we'll let clicking the checkmark behave as "Complete Now" (set time to target) ??
-        // OR better: Clicking checkmark on time-based habit is disabled or opens manual entry.
-        // Let's assume for now we keep it binary toggle behavior acts as an override or just disable it.
-        // User requested: "minimum timer habits wont be completed with click only"
-        return prevHabits; 
-      }
-
-      const newHabits = prevHabits.map(h => {
-        if (h.id !== id) return h;
-        const isCompletedToday = h.completedDates.includes(today);
-        let newStreak = h.streak;
-        let newCompletedDates = [...h.completedDates];
-
-        if (isCompletedToday) {
-          newStreak = Math.max(0, h.streak - 1); 
-          newCompletedDates = newCompletedDates.filter(d => d !== today);
-        } else {
-          newStreak += 1;
-          newCompletedDates.push(today);
-          
-          if (newStreak === 7 || newStreak === 30 || newStreak === 60 || newStreak === 100) {
-            setShowCelebration(true);
-          }
-        }
-        return { ...h, streak: newStreak, completedDates: newCompletedDates };
-      });
-      
-      const newMaxStreak = Math.max(0, ...newHabits.map(h => h.streak));
-      if (newMaxStreak > previousStreak) {
-        setPreviousStreak(newMaxStreak);
-      }
-      
-      saveHabits(newHabits);
-      return newHabits;
-    });
-    
-    // Update stats (Binary toggle)
-    const today2 = new Date().toISOString().split('T')[0];
+  // --- Handlers that wrap hook functions ---
+  const handleToggleHabit = useCallback(async (id: string) => {
     const habit = habits.find(h => h.id === id);
-    if (habit && (!habit.targetTime || habit.targetTime === 0)) {
-       const isCompletedToday = habit.completedDates.includes(today2);
-       setStats(prev => {
-         const newCompletedTotal = !isCompletedToday ? prev.totalHabitsCompleted + 1 : Math.max(0, prev.totalHabitsCompleted - 1);
-         const currentMaxStreak = Math.max(prev.longestStreak, ...habits.map(h => h.streak));
-         const newStats = { ...prev, totalHabitsCompleted: newCompletedTotal, longestStreak: currentMaxStreak };
-         saveUserStats(newStats);
-         return newStats;
-       });
+    if (!habit) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const wasCompleted = habit.completedDates.includes(today);
+    const newStreak = wasCompleted ? habit.streak : habit.streak + 1;
+    
+    // Celebration check
+    if (!wasCompleted && (newStreak === 7 || newStreak === 30 || newStreak === 60 || newStreak === 100)) {
+      setShowCelebration(true);
     }
-  }, [habits, previousStreak]);
+    
+    await toggleHabit(id);
+  }, [habits, toggleHabit]);
 
-  const handleUpdateProgress = useCallback((id: string, minutes: number) => {
-      const today = new Date().toISOString().split('T')[0];
-      setHabits(prevHabits => {
-          const newHabits = prevHabits.map(h => {
-              if (h.id !== id) return h;
-              
-              const currentProgress = h.dailyProgress?.[today] || 0;
-              const newProgress = Math.min(24 * 60, Math.max(0, minutes)); // Clamp between 0 and 24h
-              
-              const updatedDailyProgress = { ...h.dailyProgress, [today]: newProgress };
-              
-              // Check completion status
-              const target = h.targetTime || 0;
-              const wasCompleted = h.completedDates.includes(today);
-              const isNowCompleted = target > 0 && newProgress >= target;
-              
-              let newCompletedDates = [...h.completedDates];
-              let newStreak = h.streak;
-              
-              if (isNowCompleted && !wasCompleted) {
-                  // Just completed
-                  newCompletedDates.push(today);
-                  newStreak += 1;
-                  // Celebration check
-                  if (newStreak % 7 === 0 || newStreak === 30 || newStreak === 100) setShowCelebration(true);
-              } else if (!isNowCompleted && wasCompleted) {
-                  // Just un-completed (reduced time below target)
-                  newCompletedDates = newCompletedDates.filter(d => d !== today);
-                  newStreak = Math.max(0, h.streak - 1); 
-              }
-              
-              return { 
-                  ...h, 
-                  dailyProgress: updatedDailyProgress,
-                  completedDates: newCompletedDates,
-                  streak: newStreak
-              };
-          });
+  const handleUpdateProgress = useCallback(async (id: string, minutes: number) => {
+    const habit = habits.find(h => h.id === id);
+    if (!habit) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const target = habit.targetTime || 0;
+    const wasCompleted = habit.completedDates.includes(today);
+    const isNowCompleted = target > 0 && minutes >= target;
+    
+    // Celebration check
+    if (isNowCompleted && !wasCompleted) {
+      const newStreak = habit.streak + 1;
+      if (newStreak % 7 === 0 || newStreak === 30 || newStreak === 100) {
+        setShowCelebration(true);
+      }
+    }
+    
+    await updateProgress(id, minutes);
+  }, [habits, updateProgress]);
 
-          saveHabits(newHabits);
-          return newHabits;
-      });
-  }, []);
-
-  const handleSaveHabit = (title: string, category: HabitCategory, isStreakable: boolean, targetTime?: number) => {
+  const handleSaveHabit = async (title: string, category: HabitCategory, isStreakable: boolean, targetTime?: number) => {
     if (editingHabit) {
-      // Update existing
-      setHabits(prev => {
-        const newHabits = prev.map(h => 
-          h.id === editingHabit.id 
-            ? { ...h, title, category, isStreakable, targetTime: targetTime || 0 } 
-            : h
-        );
-        saveHabits(newHabits);
-        return newHabits;
-      });
+      await updateHabit(editingHabit.id, { title, category, isStreakable, targetTime: targetTime || 0 });
       setEditingHabit(null);
     } else {
-      // Create new
-      const newHabit: Habit = {
-        id: crypto.randomUUID(),
-        title,
-        category,
-        streak: 0,
-        completedDates: [],
-        createdAt: Date.now(),
-        targetTime: targetTime || 0,
-        dailyProgress: {},
-        isStreakable
-      };
-      const newHabits = [...habits, newHabit];
-      setHabits(newHabits);
-      saveHabits(newHabits);
+      await createHabit(title, category, isStreakable, targetTime);
     }
+    setIsAddModalOpen(false);
   };
 
   const handleEditClick = (habit: Habit) => {
@@ -297,53 +163,21 @@ export default function MomentumDashboard() {
     setIsAddModalOpen(true);
   };
 
-  const handleDeleteHabit = (id: string) => {
-    // Confirmation handled in UI component
-    const newHabits = habits.filter(h => h.id !== id);
-    setHabits(newHabits);
-    saveHabits(newHabits);
+  const handleDeleteHabit = async (id: string) => {
+    await deleteHabit(id);
   };
 
-  // Handle completing an additional (non-streakable) task - moves to completed list
-  const handleCompleteAdditionalTask = useCallback((id: string) => {
-    const task = habits.find(h => h.id === id);
-    if (!task || task.isStreakable) return;
-    
-    // Remove from active habits
-    const newHabits = habits.filter(h => h.id !== id);
-    setHabits(newHabits);
-    saveHabits(newHabits);
-    
-    // Add to completed tasks with completion date
-    const completedTask = { ...task, completedAt: new Date().toISOString() };
-    const newCompletedTasks = [completedTask, ...completedTasks];
-    setCompletedTasks(newCompletedTasks);
-    saveCompletedTasks(newCompletedTasks);
-  }, [habits, completedTasks]);
+  const handleCompleteAdditionalTask = useCallback(async (id: string) => {
+    await completeAdditionalTask(id);
+  }, [completeAdditionalTask]);
 
-  // Handle restoring a completed additional task back to active list
-  const handleRestoreTask = useCallback((id: string) => {
-    const task = completedTasks.find(t => t.id === id);
-    if (!task) return;
-    
-    // Remove from completed tasks
-    const newCompletedTasks = completedTasks.filter(t => t.id !== id);
-    setCompletedTasks(newCompletedTasks);
-    saveCompletedTasks(newCompletedTasks);
-    
-    // Add back to active habits (remove completedAt)
-    const { completedAt, ...activeTask } = task;
-    const newHabits = [...habits, activeTask];
-    setHabits(newHabits);
-    saveHabits(newHabits);
-  }, [habits, completedTasks]);
+  const handleRestoreTask = useCallback(async (id: string) => {
+    await restoreTask(id);
+  }, [restoreTask]);
 
-  // Handle deleting a completed task permanently
-  const handleDeleteCompletedTask = useCallback((id: string) => {
-    const newCompletedTasks = completedTasks.filter(t => t.id !== id);
-    setCompletedTasks(newCompletedTasks);
-    saveCompletedTasks(newCompletedTasks);
-  }, [completedTasks]);
+  const handleDeleteCompletedTask = useCallback(async (id: string) => {
+    await deleteCompletedTask(id);
+  }, [deleteCompletedTask]);
 
   // Filter habits by type
   const streakableTasks = habits.filter(h => h.isStreakable);
@@ -373,7 +207,8 @@ export default function MomentumDashboard() {
     return <LoginScreen />;
   }
 
-  if (!mounted) {
+  // Show loading while fetching data from API
+  if (habitsLoading || statsLoading) {
     return (
       <div className="h-screen bg-background-dark flex items-center justify-center">
         <motion.div 
