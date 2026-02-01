@@ -285,8 +285,6 @@ export default function StreakQuestPage() {
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  whileHover={{ scale: 1.01 }}
                   className="relative overflow-hidden rounded-3xl p-8 flex items-center justify-center shadow-lg min-h-[180px] shrink-0 group m-1"
                 >
                     {/* Background Gradient & Effects */}
@@ -294,8 +292,6 @@ export default function StreakQuestPage() {
                     
                     <motion.div 
                       className="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
-                      animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-                      transition={{ duration: 4, repeat: Infinity }}
                     />
 
                     <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto">
@@ -305,7 +301,7 @@ export default function StreakQuestPage() {
                           transition={{ delay: 0.2 }}
                           className="flex items-center gap-2 mb-4"
                         >
-                            <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Daily Wisdom</span>
+                            <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Quote of the day</span>
                         </motion.div>
 
                         <div className="relative">
@@ -317,7 +313,7 @@ export default function StreakQuestPage() {
                               transition={{ delay: 0.3 }}
                               style={{ fontStyle: 'italic' }} 
                             >
-                                &quot;Discipline is doing what needs to be done, even if you don&apos;t want to do it.&quot;
+                                Discipline is doing what needs to be done, even if you don&apos;t want to do it.
                             </motion.p>
                             <Quote className="absolute -bottom-8 -right-10 w-10 h-10 text-primary/20" />
                         </div>
