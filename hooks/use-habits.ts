@@ -103,16 +103,18 @@ export function useHabits(): UseHabitsReturn {
     const today = new Date().toISOString().split('T')[0];
     const isCompletedToday = habit.completedDates.includes(today);
     
-    let newStreak = habit.streak;
+    // let newStreak = habit.streak; // Removed to avoid redeclaration
     let newCompletedDates = [...habit.completedDates];
 
     if (isCompletedToday) {
-      newStreak = Math.max(0, habit.streak - 1);
       newCompletedDates = newCompletedDates.filter(d => d !== today);
     } else {
-      newStreak += 1;
       newCompletedDates.push(today);
     }
+
+    // Recalculate streak using robust utility
+    const { calculateStreak } = await import('@/lib/utils');
+    const newStreak = calculateStreak(newCompletedDates);
 
     await updateHabit(id, { streak: newStreak, completedDates: newCompletedDates });
   }, [habits, updateHabit]);

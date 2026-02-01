@@ -73,8 +73,18 @@ export function Heatmap({ habits }: HeatmapProps) {
     if (dateStr > todayStr) return -1; // Future dates
     if (activeHabits.length === 0) return 0;
     
-    const completions = activeHabits.filter(h => h.completedDates.includes(dateStr)).length;
-    const total = activeHabits.length;
+    const dateObj = new Date(dateStr);
+    
+    // Only count habits that existed on this date
+    // This allows adding new habits without destroying past heatmap intensity
+    const relevantHabits = activeHabits.filter(h => 
+      new Date(h.createdAt).setHours(0,0,0,0) <= dateObj.setHours(0,0,0,0)
+    );
+    
+    if (relevantHabits.length === 0) return -1; // No habits existed then -> Render as empty/dim
+    
+    const completions = relevantHabits.filter(h => h.completedDates.includes(dateStr)).length;
+    const total = relevantHabits.length;
     
     if (total === 0) return 0;
     const percentage = completions / total;

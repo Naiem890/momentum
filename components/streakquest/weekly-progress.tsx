@@ -48,7 +48,13 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
     
     // However, finding exact historical count is hard without historical logs of "active habits at that time".
     // We will just approximate with CURRENT streakable habits.
-    const streakableHabits = habits.filter(h => h.isStreakable);
+    // Only consider streakable habits that existed on this date
+    // This prevents "failed" status for days before the habit was even created
+    const streakableHabits = habits.filter(h => 
+      h.isStreakable && 
+      new Date(h.createdAt).setHours(0,0,0,0) <= date.setHours(0,0,0,0)
+    );
+    
     const completedCount = streakableHabits.filter(h => h.completedDates.includes(dateStr)).length;
     const totalHabits = streakableHabits.length;
     

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import dbConnect from '@/lib/db/mongodb';
 import Habit from '@/lib/db/models/Habit';
+import { calculateStreak } from '@/lib/utils'; // Added directly here
 
 // GET /api/habits - List user's habits
 export async function GET() {
@@ -17,19 +18,27 @@ export async function GET() {
     const habits = await Habit.find({ userId: session.user.id }).sort({ createdAt: -1 });
     
     // Transform MongoDB documents to match frontend Habit type
-    const transformedHabits = habits.map(habit => ({
-      id: habit._id.toString(),
-      title: habit.title,
-      description: habit.description,
-      category: habit.category,
-      streak: habit.streak,
-      completedDates: habit.completedDates,
-      createdAt: habit.createdAt.getTime(),
-      targetTime: habit.targetTime,
-      dailyProgress: Object.fromEntries(habit.dailyProgress || new Map()),
-      isStreakable: habit.isStreakable,
-      completedAt: habit.completedAt?.toISOString(),
-    }));
+    // AND recalculate streaks on the fly to ensure accuracy
+    const transformedHabits = habits.map(habit => {
+      // Auto-correct streak based on actual history
+      const correctStreak = calculateStreak(habit.completedDates || []);
+
+      return {
+        id: habit._id.toString(),
+        title: habit.title,
+        description: habit.description,
+        category: habit.category,
+        streak: correctStreak, // Use calculated streak
+        completedDates: habit.completedDates,
+        createdAt: habit.createdAt.getTime(),
+        targetTime: habit.targetTime,
+        dailyProgress: Object.fromEntries(habit.dailyProgress || new Map()),
+        isStreakable: habit.isStreakable,
+        completedAt: habit.completedAt?.toISOString(),
+      };
+    });
+
+    return NextResponse.json(transformedHabits);
 
     return NextResponse.json(transformedHabits);
   } catch (error) {
