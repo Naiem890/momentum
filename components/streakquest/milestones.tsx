@@ -80,7 +80,7 @@ export function Milestones({ stats, habits }: MilestonesProps) {
          animate="show"
          className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1"
        >
-           <div className="grid grid-cols-2 gap-4 p-3">
+           <div className="grid grid-cols-3 gap-4 p-3">
             {badges.map((badge) => {
               const Icon = badge.icon;
               return (
@@ -159,10 +159,16 @@ export function Milestones({ stats, habits }: MilestonesProps) {
                               Unlocked
                             </>
                           ) : (
-                            <>
-                              <Lock className="w-2.5 h-2.5" />
-                              {Math.round(badge.progress)}%
-                            </>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden relative border border-white/5 mx-auto">
+                                <motion.div 
+                                  className="absolute top-0 left-0 h-full bg-primary"
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${badge.progress}%` }}
+                                  transition={{ duration: 1, delay: 0.2 }}
+                                />
+                              </div>
+                            </div>
                           )}
                       </motion.div>
                    </div>
