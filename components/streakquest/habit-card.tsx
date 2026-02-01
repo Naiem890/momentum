@@ -287,7 +287,7 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                                 </Button>
                             </AlertDialogTrigger>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-red-500 border-red-600 text-white"><p>Delete Protocol</p></TooltipContent>
+                        <TooltipContent className="bg-red-500 border-red-600 text-white fill-red-500">Delete Protocol</TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                     
