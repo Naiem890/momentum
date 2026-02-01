@@ -124,7 +124,7 @@ export function Heatmap({ habits }: HeatmapProps) {
                        size="sm"
                        onClick={() => setFilter(f.id)}
                        className={cn(
-                           "px-4 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                           "px-4 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
                            filter === f.id 
                                ? "bg-primary text-white shadow-sm hover:bg-primary" 
                                : "text-gray-400 hover:text-white hover:bg-transparent"
@@ -157,7 +157,7 @@ export function Heatmap({ habits }: HeatmapProps) {
                                     <TooltipTrigger asChild>
                                       <div 
                                           className={cn(
-                                              "w-3 h-3 rounded-[2px] transition-all hover:ring-1 hover:ring-white/50",
+                                              "w-3 h-3 rounded-[2px] transition-all hover:ring-1 hover:ring-white/50 cursor-pointer",
                                               getCellColor(intensity)
                                           )}
                                       />

@@ -44,7 +44,7 @@ const itemVariants = {
     opacity: 1, 
     y: 0, 
     scale: 1,
-    transition: { type: "spring", stiffness: 300, damping: 24 }
+    transition: { type: "spring" as const, stiffness: 300, damping: 24 }
   }
 };
 
@@ -120,7 +120,7 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                       whileHover={{ scale: 1.03, y: -2 }}
                       whileTap={{ scale: 0.97 }}
                       className={cn(
-                        "relative flex items-center gap-3 px-4 py-4 rounded-xl border-2 transition-all overflow-hidden",
+                        "relative flex items-center gap-3 px-4 py-4 rounded-xl border-2 transition-all overflow-hidden cursor-pointer",
                         isSelected
                           ? 'border-primary bg-primary/10'
                           : 'border-surface-border bg-background-dark hover:border-surface-border/80'

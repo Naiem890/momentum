@@ -15,6 +15,7 @@ import { Milestones } from '@/components/streakquest/milestones';
 import { WeeklyProgress } from '@/components/streakquest/weekly-progress';
 import { AddHabitModal } from '@/components/streakquest/add-habit-modal';
 import { Celebration, AnimatedCounter, StreakFire } from '@/components/streakquest/animations';
+import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, 
@@ -22,10 +23,13 @@ import {
   Zap,
   Quote,
   Moon,
-  Sparkles,
+  Sun,
 } from 'lucide-react';
 
 export default function StreakQuestPage() {
+  // --- Theme ---
+  const { theme, toggleTheme } = useTheme();
+  
   // --- Data State ---
   const [habits, setHabits] = useState<Habit[]>([]);
   const [stats, setStats] = useState<UserStats>({
@@ -185,13 +189,6 @@ export default function StreakQuestPage() {
            StreakQuest <span className="text-primary">OS</span>
         </motion.div>
         <div className="flex items-center gap-4">
-           <motion.button 
-             whileHover={{ scale: 1.1, rotate: 15 }}
-             whileTap={{ scale: 0.9 }}
-             className="hover:text-primary transition-colors"
-           >
-              <Moon className="w-5 h-5" />
-           </motion.button>
            <motion.div 
              className="text-[10px] text-gray-600 border border-surface-border px-2 py-1 rounded uppercase"
              animate={{ opacity: [0.5, 1, 0.5] }}

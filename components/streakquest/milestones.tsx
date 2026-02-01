@@ -29,7 +29,7 @@ const item = {
     y: 0, 
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 300,
       damping: 24
     }
@@ -62,7 +62,7 @@ export function Milestones({ stats, habits }: MilestonesProps) {
            <motion.button 
              whileHover={{ scale: 1.05, x: 3 }}
              whileTap={{ scale: 0.95 }}
-             className="text-xs font-mono text-primary hover:text-primary-glow transition-colors uppercase tracking-wider"
+             className="text-xs font-mono text-primary hover:text-primary-glow transition-colors uppercase tracking-wider cursor-pointer"
            >
                VIEW ALL
            </motion.button>
@@ -75,7 +75,7 @@ export function Milestones({ stats, habits }: MilestonesProps) {
          animate="show"
          className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1"
        >
-           <div className="grid grid-cols-2 gap-4">
+           <div className="grid grid-cols-2 gap-4 p-3">
             {badges.map((badge) => {
               const Icon = badge.icon;
               return (
