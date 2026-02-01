@@ -8,7 +8,9 @@ import {
   getUserStats, 
   saveUserStats,
   getDailyQuote,
-  saveDailyQuote
+  saveDailyQuote,
+  getCompletedTasks,
+  saveCompletedTasks
 } from '@/lib/storage';
 import { Habit, UserStats, HabitCategory } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -21,6 +23,16 @@ import { AddHabitModal } from '@/components/streakquest/add-habit-modal';
 import { Celebration, AnimatedCounter, StreakFire } from '@/components/streakquest/animations';
 import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { 
   Plus, 
   Flame,
@@ -29,6 +41,11 @@ import {
   Moon,
   Sun,
   RefreshCw,
+  CheckCircle2,
+  ChevronDown,
+  RotateCcw,
+  Trash2,
+  Circle,
 } from 'lucide-react';
 
 export default function MomentumDashboard() {
@@ -49,6 +66,9 @@ export default function MomentumDashboard() {
   const [quote, setQuote] = useState<QuoteType>(MOTIVATIONAL_QUOTES[0]);
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [completedTasks, setCompletedTasks] = useState<Habit[]>([]); // Completed one-time tasks
+  const [taskFilter, setTaskFilter] = useState<'all' | 'daily' | 'onetime' | 'completed'>('all');
+  const [taskToRestore, setTaskToRestore] = useState<Habit | null>(null); // For restore confirmation
 
   const loadNewQuote = async (saveToCache: boolean = false) => {
     setIsQuoteLoading(true);
@@ -65,6 +85,7 @@ export default function MomentumDashboard() {
     setMounted(true);
     const loadedHabits = getHabits();
     const loadedStats = getUserStats();
+    const loadedCompletedTasks = getCompletedTasks();
     
     // Load quote (check cache first)
     const todayDateStr = new Date().toISOString().split('T')[0];
@@ -85,19 +106,26 @@ export default function MomentumDashboard() {
     const yesterdayStr = yesterday.toISOString().split('T')[0];
 
     const updatedHabits = loadedHabits.map(h => {
-      const lastCompleted = h.completedDates[h.completedDates.length - 1];
-      if (lastCompleted && lastCompleted < yesterdayStr) {
-        return { ...h, streak: 0 };
+      // Backwards compatibility: default isStreakable to true for existing habits
+      const isStreakable = h.isStreakable !== false;
+      
+      // Only reset streak for streakable habits
+      if (isStreakable) {
+        const lastCompleted = h.completedDates[h.completedDates.length - 1];
+        if (lastCompleted && lastCompleted < yesterdayStr) {
+          return { ...h, streak: 0, isStreakable };
+        }
       }
-      return h;
+      return { ...h, isStreakable };
     });
 
-
     setHabits(updatedHabits);
+    setCompletedTasks(loadedCompletedTasks);
     
-    // Recalculate stats based on active habits to fix any corrupted/mock data
-    const realTotalCompletions = updatedHabits.reduce((acc, h) => acc + h.completedDates.length, 0);
-    const realLongestStreak = Math.max(0, ...updatedHabits.map(h => h.streak), loadedStats.longestStreak > 100 ? 0 : loadedStats.longestStreak);
+    // Recalculate stats based on active streakable habits only
+    const streakableHabits = updatedHabits.filter(h => h.isStreakable);
+    const realTotalCompletions = streakableHabits.reduce((acc, h) => acc + h.completedDates.length, 0);
+    const realLongestStreak = Math.max(0, ...streakableHabits.map(h => h.streak), loadedStats.longestStreak > 100 ? 0 : loadedStats.longestStreak);
     
     const correctedStats = {
       ...loadedStats,
@@ -106,7 +134,7 @@ export default function MomentumDashboard() {
     };
 
     setStats(correctedStats);
-    setPreviousStreak(Math.max(0, ...updatedHabits.map(h => h.streak)));
+    setPreviousStreak(Math.max(0, ...streakableHabits.map(h => h.streak)));
     saveHabits(updatedHabits); 
     saveUserStats(correctedStats); 
   }, []);
@@ -215,13 +243,13 @@ export default function MomentumDashboard() {
       });
   }, []);
 
-  const handleSaveHabit = (title: string, category: HabitCategory, targetTime?: number) => {
+  const handleSaveHabit = (title: string, category: HabitCategory, isStreakable: boolean, targetTime?: number) => {
     if (editingHabit) {
       // Update existing
       setHabits(prev => {
         const newHabits = prev.map(h => 
           h.id === editingHabit.id 
-            ? { ...h, title, category, targetTime: targetTime || 0 } 
+            ? { ...h, title, category, isStreakable, targetTime: targetTime || 0 } 
             : h
         );
         saveHabits(newHabits);
@@ -238,7 +266,8 @@ export default function MomentumDashboard() {
         completedDates: [],
         createdAt: Date.now(),
         targetTime: targetTime || 0,
-        dailyProgress: {}
+        dailyProgress: {},
+        isStreakable
       };
       const newHabits = [...habits, newHabit];
       setHabits(newHabits);
@@ -258,7 +287,53 @@ export default function MomentumDashboard() {
     saveHabits(newHabits);
   };
 
-  const currentStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
+  // Handle completing an additional (non-streakable) task - moves to completed list
+  const handleCompleteAdditionalTask = useCallback((id: string) => {
+    const task = habits.find(h => h.id === id);
+    if (!task || task.isStreakable) return;
+    
+    // Remove from active habits
+    const newHabits = habits.filter(h => h.id !== id);
+    setHabits(newHabits);
+    saveHabits(newHabits);
+    
+    // Add to completed tasks with completion date
+    const completedTask = { ...task, completedAt: new Date().toISOString() };
+    const newCompletedTasks = [completedTask, ...completedTasks];
+    setCompletedTasks(newCompletedTasks);
+    saveCompletedTasks(newCompletedTasks);
+  }, [habits, completedTasks]);
+
+  // Handle restoring a completed additional task back to active list
+  const handleRestoreTask = useCallback((id: string) => {
+    const task = completedTasks.find(t => t.id === id);
+    if (!task) return;
+    
+    // Remove from completed tasks
+    const newCompletedTasks = completedTasks.filter(t => t.id !== id);
+    setCompletedTasks(newCompletedTasks);
+    saveCompletedTasks(newCompletedTasks);
+    
+    // Add back to active habits (remove completedAt)
+    const { completedAt, ...activeTask } = task;
+    const newHabits = [...habits, activeTask];
+    setHabits(newHabits);
+    saveHabits(newHabits);
+  }, [habits, completedTasks]);
+
+  // Handle deleting a completed task permanently
+  const handleDeleteCompletedTask = useCallback((id: string) => {
+    const newCompletedTasks = completedTasks.filter(t => t.id !== id);
+    setCompletedTasks(newCompletedTasks);
+    saveCompletedTasks(newCompletedTasks);
+  }, [completedTasks]);
+
+  // Filter habits by type
+  const streakableTasks = habits.filter(h => h.isStreakable);
+  const additionalTasks = habits.filter(h => !h.isStreakable);
+
+  // Current streak is based on streakable habits only
+  const currentStreak = streakableTasks.length > 0 ? Math.max(...streakableTasks.map(h => h.streak)) : 0;
   // const currentStreak = 365; // MOCK FOR DEMO
 
   if (!mounted) {
@@ -463,14 +538,14 @@ export default function MomentumDashboard() {
 
 
 
-                {/* Active Quests */}
+                {/* Active Protocols */}
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
                   className="bg-surface-dark rounded-3xl p-8 flex-1 shadow-sm flex flex-col min-h-0 overflow-hidden"
                 >
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
                             <h3 className="font-semibold text-lg text-white">Active Protocols</h3>
                             <motion.span 
@@ -503,9 +578,137 @@ export default function MomentumDashboard() {
                         </motion.div>
                     </div>
 
+                    {/* Filter Button Group */}
+                    <div className="flex gap-1 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border mb-4">
+                        <button
+                            onClick={() => setTaskFilter('all')}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                taskFilter === 'all' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
+                            )}
+                        >
+                            All
+                            <span className="text-[10px] opacity-60">({habits.length})</span>
+                        </button>
+                        <button
+                            onClick={() => setTaskFilter('daily')}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                taskFilter === 'daily' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
+                            )}
+                        >
+                            <Flame className="w-3 h-3 text-primary" />
+                            Daily
+                            <span className="text-[10px] opacity-60">({streakableTasks.length})</span>
+                        </button>
+                        <button
+                            onClick={() => setTaskFilter('onetime')}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                taskFilter === 'onetime' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
+                            )}
+                        >
+                            <Circle className="w-3 h-3 text-blue-400" />
+                            One Time
+                            <span className="text-[10px] opacity-60">({additionalTasks.length})</span>
+                        </button>
+                        <button
+                            onClick={() => setTaskFilter('completed')}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                taskFilter === 'completed' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
+                            )}
+                        >
+                            <CheckCircle2 className="w-3 h-3 text-green-400" />
+                            Completed
+                            <span className="text-[10px] opacity-60">({completedTasks.length})</span>
+                        </button>
+                    </div>
+
                     <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 -mr-2">
                         <AnimatePresence mode="wait">
-                      {habits.length === 0 ? (
+                      {(() => {
+                        // Handle completed filter separately
+                        if (taskFilter === 'completed') {
+                          return completedTasks.length === 0 ? (
+                            <motion.div 
+                              key="empty-completed"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="flex-1 border border-dashed border-surface-border rounded-2xl flex flex-col items-center justify-center p-12 group hover:border-primary/30 transition-colors"
+                            >
+                                <motion.div
+                                  animate={{ rotate: [0, 5, -5, 0] }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                >
+                                  <CheckCircle2 className="w-12 h-12 text-surface-border mb-4 group-hover:text-green-500/50 transition-colors" />
+                                </motion.div>
+                                <h4 className="text-gray-400 font-medium mb-1">No Completed Tasks</h4>
+                                <p className="text-sm text-gray-600">Complete One Time tasks to see them here.</p>
+                            </motion.div>
+                          ) : (
+                            <motion.div 
+                              key="list-completed"
+                              className="flex flex-col gap-2"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                            >
+                              <AnimatePresence mode="popLayout">
+                                {completedTasks.map((task) => (
+                                  <motion.div
+                                    key={task.id}
+                                    layout
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    onClick={() => setTaskToRestore(task)}
+                                    className="flex items-center justify-between p-3 bg-surface-dark-lighter/50 rounded-xl border border-surface-border group cursor-pointer hover:bg-surface-dark-lighter transition-all"
+                                  >
+                                    <div className="flex items-center gap-3 min-w-0">
+                                      <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center transition-colors">
+                                        <CheckCircle2 className="w-4 h-4 text-green-400 transition-colors" />
+                                      </div>
+                                      <div className="min-w-0">
+                                        <p className="text-sm text-gray-400 line-through truncate group-hover:text-gray-300 transition-colors">{task.title}</p>
+                                        <p className="text-[10px] text-gray-600 font-mono">
+                                          Completed {task.completedAt ? new Date(task.completedAt).toLocaleDateString() : ''}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => setTaskToRestore(task)}
+                                        className="h-8 w-8 text-gray-500 rounded-lg"
+                                      >
+                                        <RotateCcw className="w-4 h-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleDeleteCompletedTask(task.id)}
+                                        className="h-8 w-8 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  </motion.div>
+                                ))}
+                              </AnimatePresence>
+                            </motion.div>
+                          );
+                        }
+
+                        const filteredTasks = taskFilter === 'all' 
+                          ? habits 
+                          : taskFilter === 'daily' 
+                            ? streakableTasks 
+                            : additionalTasks;
+                        
+                        return filteredTasks.length === 0 ? (
                           <motion.div 
                             key="empty"
                             initial={{ opacity: 0 }}
@@ -521,23 +724,27 @@ export default function MomentumDashboard() {
                               >
                                 <Zap className="w-12 h-12 text-surface-border mb-4 group-hover:text-primary/50 transition-colors" />
                               </motion.div>
-                              <h4 className="text-gray-400 font-medium mb-1">No Active Protocols</h4>
-                              <p className="text-sm text-gray-600">Initialize your first protocol to begin.</p>
+                              <h4 className="text-gray-400 font-medium mb-1">
+                                {taskFilter === 'all' ? 'No Active Protocols' : taskFilter === 'daily' ? 'No Daily Tasks' : 'No One Time Tasks'}
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                {taskFilter === 'daily' ? 'Add daily tasks that build your streak.' : 'Add tasks to get started.'}
+                              </p>
                           </motion.div>
-                      ) : (
-                      <motion.div 
-                            key="list"
+                        ) : (
+                          <motion.div 
+                            key={`list-${taskFilter}`}
                             className="flex flex-col gap-3"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                           >
                               <AnimatePresence mode="popLayout">
-                                {habits.map((habit, index) => (
+                                {filteredTasks.map((habit, index) => (
                                     <HabitCard 
                                         key={habit.id} 
                                         habit={habit} 
-                                        onToggle={handleToggleHabit} 
+                                        onToggle={habit.isStreakable ? handleToggleHabit : handleCompleteAdditionalTask} 
                                         onDelete={handleDeleteHabit}
                                         onEdit={handleEditClick}
                                         onProgress={handleUpdateProgress}
@@ -546,7 +753,8 @@ export default function MomentumDashboard() {
                                 ))}
                               </AnimatePresence>
                           </motion.div>
-                      )}
+                        );
+                      })()}
                         </AnimatePresence>
                     </div>
                 </motion.div>
@@ -572,6 +780,36 @@ export default function MomentumDashboard() {
         onSave={handleSaveHabit}
         initialData={editingHabit}
       />
+
+      {/* Restore Task Confirmation Dialog */}
+      <AlertDialog open={taskToRestore !== null} onOpenChange={(open) => !open && setTaskToRestore(null)}>
+        <AlertDialogContent className="bg-surface-dark border-surface-border rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Restore Task?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              This will move <span className="text-white font-medium">"{taskToRestore?.title}"</span> back to your One Time tasks list.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              className="bg-surface-dark-lighter border-surface-border text-gray-400 hover:text-white hover:bg-surface-dark-lighter/80"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                if (taskToRestore) {
+                  handleRestoreTask(taskToRestore.id);
+                  setTaskToRestore(null);
+                }
+              }}
+              className="font-bold"
+            >
+              Restore
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

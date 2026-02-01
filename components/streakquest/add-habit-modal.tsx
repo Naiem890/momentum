@@ -12,14 +12,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Brain, Activity, Briefcase, Zap, Sparkles, Pencil, Timer, CheckCircle } from 'lucide-react';
+import { Brain, Activity, Briefcase, Zap, Sparkles, Pencil, Timer, CheckCircle, Repeat, Circle } from 'lucide-react';
 import { useEffect } from 'react';
-import { Switch } from '@/components/ui/switch'; // Assuming existing or using Shadcn Switch
+import { Switch } from '@/components/ui/switch';
 
 interface AddHabitModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (title: string, category: HabitCategory, targetTime?: number) => void;
+  onSave: (title: string, category: HabitCategory, isStreakable: boolean, targetTime?: number) => void;
   initialData?: Habit | null;
 }
 
@@ -55,6 +55,9 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<HabitCategory>('health');
   
+  // Task Type State
+  const [isStreakable, setIsStreakable] = useState(true);
+  
   // Time Tracking State
   const [isTimeBased, setIsTimeBased] = useState(false);
   const [hours, setHours] = useState(0);
@@ -66,6 +69,7 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
     if (initialData) {
       setTitle(initialData.title);
       setCategory(initialData.category);
+      setIsStreakable(initialData.isStreakable !== false); // default to true for backwards compat
       if (initialData.targetTime && initialData.targetTime > 0) {
         setIsTimeBased(true);
         setHours(Math.floor(initialData.targetTime / 60));
@@ -78,6 +82,7 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
     } else {
       setTitle('');
       setCategory('health');
+      setIsStreakable(true);
       setIsTimeBased(false);
       setHours(0);
       setMinutes(30);
@@ -87,11 +92,12 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      const targetTime = isTimeBased ? (hours * 60) + minutes : 0;
-      onSave(title, category, targetTime);
+      const targetTime = isTimeBased && isStreakable ? (hours * 60) + minutes : 0;
+      onSave(title, category, isStreakable, targetTime);
       if (!isEditing) {
         setTitle('');
         setCategory('health');
+        setIsStreakable(true);
         setIsTimeBased(false);
         setHours(0);
         setMinutes(30);
@@ -221,12 +227,50 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
               </div>
             </motion.div>
 
-            {/* Goal Type Section */}
+            {/* Task Type Section */}
             <motion.div
                  initial={{ opacity: 0 }}
                  animate={{ opacity: 1 }}
-                 transition={{ delay: 0.3 }}
-                 className="space-y-4"
+                 transition={{ delay: 0.25 }}
+                 className="space-y-3"
+            >
+                <label className="block text-sm font-medium text-text-muted">Task Type</label>
+                <div className="flex items-center gap-3">
+                    <div className="flex w-full gap-2 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
+                        <button
+                            type="button"
+                            onClick={() => setIsStreakable(true)}
+                            className={cn(
+                                "flex grow-1 items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                                isStreakable ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                            )}
+                        >
+                            <Repeat className="w-4 h-4" />
+                            Daily
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setIsStreakable(false)}
+                            className={cn(
+                                "flex grow-1 items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                                !isStreakable ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                            )}
+                        >
+                            <Circle className="w-4 h-4" />
+                            One Time
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Goal Type Section - Only for Streakable tasks */}
+            <AnimatePresence>
+            {isStreakable && (
+            <motion.div
+                 initial={{ height: 0, opacity: 0 }}
+                 animate={{ height: "auto", opacity: 1 }}
+                 exit={{ height: 0, opacity: 0 }}
+                 className="space-y-4 overflow-hidden"
             >
                 <label className="block text-sm font-medium text-text-muted">Goal Type</label>
                 <div className="flex gap-4 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
@@ -295,6 +339,8 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                     )}
                 </AnimatePresence>
             </motion.div>
+            )}
+            </AnimatePresence>
 
 
             <motion.div

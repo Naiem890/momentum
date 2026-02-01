@@ -10,6 +10,8 @@ export interface Habit {
   createdAt: number;
   targetTime?: number; // Target time in minutes. 0 or undefined = simple habit
   dailyProgress?: Record<string, number>; // Key: YYYY-MM-DD, Value: minutes spent
+  isStreakable: boolean; // true = daily streak task (default), false = additional/one-time task
+  completedAt?: string; // ISO date when additional task was completed (for non-streakable only)
 }
 
 export interface UserStats {

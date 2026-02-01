@@ -22,7 +22,9 @@ import {
   Pause,
   Check,
   Edit3,
-  RotateCcw
+  RotateCcw,
+  Circle,
+  Repeat
 } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
@@ -60,8 +62,9 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
   const [showPulse, setShowPulse] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  // Time Tracking Logic
-  const isTimeBased = (habit.targetTime || 0) > 0;
+  // Time Tracking Logic - only for streakable tasks
+  const isStreakable = habit.isStreakable !== false;
+  const isTimeBased = isStreakable && (habit.targetTime || 0) > 0;
   const currentMinutes = habit.dailyProgress?.[today] || 0;
   const targetMinutes = habit.targetTime || 0;
   const progressPercent = isTimeBased ? Math.min(100, (currentMinutes / targetMinutes) * 100) : (isCompleted ? 100 : 0);
@@ -178,10 +181,25 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                         {habit.title}
                     </h3>
                     
-                    {habit.streak > 0 && (
+                    {/* Streak badge - only for streakable tasks */}
+                    {isStreakable && habit.streak > 0 && (
                         <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded-full">
                             <Flame className="w-3 h-3 fill-orange-400/20" />
                             <span>{habit.streak}</span>
+                        </div>
+                    )}
+
+                    {/* Daily task badge - only for streakable tasks */}
+                    {isStreakable && (
+                        <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                            <Repeat className="w-3 h-3" />
+                        </div>
+                    )}
+                    
+                    {/* One Time task badge - only for non-streakable */}
+                    {!isStreakable && (
+                        <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded-full">
+                            <Circle className="w-3 h-3" />
                         </div>
                     )}
                 </div>

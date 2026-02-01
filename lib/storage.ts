@@ -68,3 +68,22 @@ export const saveDailyQuote = (quote: { text: string; author: string }) => {
   const storedData: StoredQuote = { date: today, quote };
   localStorage.setItem(QUOTE_KEY, JSON.stringify(storedData));
 };
+
+// --- Completed Additional Tasks Storage ---
+const COMPLETED_TASKS_KEY = 'momentum_completed_tasks';
+
+export const getCompletedTasks = (): Habit[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(COMPLETED_TASKS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    console.error("Failed to load completed tasks", e);
+    return [];
+  }
+};
+
+export const saveCompletedTasks = (tasks: Habit[]) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(COMPLETED_TASKS_KEY, JSON.stringify(tasks));
+};
