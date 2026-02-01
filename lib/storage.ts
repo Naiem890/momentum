@@ -58,3 +58,28 @@ export const getLevelProgress = (xp: number): number => {
   
   return Math.min(100, Math.max(0, (xpInLevel / xpNeeded) * 100));
 };
+
+// --- Quote Storage ---
+interface StoredQuote {
+  date: string;
+  quote: { text: string; author: string };
+}
+const QUOTE_KEY = 'streak_daily_quote';
+
+export const getDailyQuote = (): StoredQuote | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const data = localStorage.getItem(QUOTE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error("Failed to load daily quote", e);
+    return null;
+  }
+};
+
+export const saveDailyQuote = (quote: { text: string; author: string }) => {
+  if (typeof window === 'undefined') return;
+  const today = new Date().toISOString().split('T')[0];
+  const storedData: StoredQuote = { date: today, quote };
+  localStorage.setItem(QUOTE_KEY, JSON.stringify(storedData));
+};

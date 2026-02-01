@@ -6,7 +6,9 @@ import {
   getHabits, 
   saveHabits, 
   getUserStats, 
-  saveUserStats
+  saveUserStats,
+  getDailyQuote,
+  saveDailyQuote
 } from '@/lib/storage';
 import { Habit, UserStats, HabitCategory } from '@/lib/types';
 import { fetchQuote, Quote as QuoteType, MOTIVATIONAL_QUOTES } from '@/lib/quotes';
@@ -48,10 +50,13 @@ export default function StreakQuestPage() {
   const [quote, setQuote] = useState<QuoteType>(MOTIVATIONAL_QUOTES[0]);
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
 
-  const loadNewQuote = async () => {
+  const loadNewQuote = async (saveToCache: boolean = false) => {
     setIsQuoteLoading(true);
     const newQuote = await fetchQuote();
     setQuote(newQuote);
+    if (saveToCache) {
+      saveDailyQuote(newQuote);
+    }
     setIsQuoteLoading(false);
   };
 
@@ -61,8 +66,16 @@ export default function StreakQuestPage() {
     const loadedHabits = getHabits();
     const loadedStats = getUserStats();
     
-    // Load initial quote
-    loadNewQuote();
+    // Load quote (check cache first)
+    const todayDateStr = new Date().toISOString().split('T')[0];
+    const cached = getDailyQuote();
+    
+    if (cached && cached.date === todayDateStr) {
+      setQuote(cached.quote);
+      setIsQuoteLoading(false);
+    } else {
+      loadNewQuote(true); // Fetch and cache for today
+    }
     
     // Streak check logic
     const today = new Date();
@@ -321,7 +334,7 @@ export default function StreakQuestPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={loadNewQuote}
+                              onClick={() => loadNewQuote(true)}
                               disabled={isQuoteLoading}
                               className="text-primary/50 hover:text-primary hover:bg-primary/10 transition-colors w-8 h-8 rounded-full"
                             >
@@ -349,7 +362,7 @@ export default function StreakQuestPage() {
                                   className="text-2xl md:text-3xl font-display text-white leading-tight tracking-wide drop-shadow-md"
                                   style={{ fontStyle: 'italic' }} 
                                 >
-                                    &quot;{quote.text}&quot;
+                                  {quote.text}
                                 </p>
                                 <span className="text-gray-400 font-mono text-sm tracking-wider opacity-80">— {quote.author}</span>
                               </motion.div>
