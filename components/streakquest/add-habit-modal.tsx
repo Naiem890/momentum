@@ -268,35 +268,37 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                  initial={{ height: 0, opacity: 0 }}
                  animate={{ height: "auto", opacity: 1 }}
                  exit={{ height: 0, opacity: 0 }}
-                 className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4 overflow-hidden"
+                 className="space-y-4 overflow-hidden"
             >
-                <label className="text-sm font-medium text-text-muted whitespace-nowrap">Goal Type</label>
-                <div className="flex w-full sm:w-auto gap-2 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
-                    <button
-                        type="button"
-                        onClick={() => setIsTimeBased(false)}
-                        className={cn(
-                            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
-                            !isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
-                        )}
-                    >
-                        <CheckCircle className="w-4 h-4" />
-                        Check-off
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setIsTimeBased(true)}
-                        className={cn(
-                            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
-                            isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
-                        )}
-                    >
-                        <Timer className="w-4 h-4" />
-                        Time-based
-                    </button>
+              <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4">
+                  <label className="text-sm font-medium text-text-muted whitespace-nowrap">Goal Type</label>
+                  <div className="flex w-full sm:w-auto gap-2 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
+                      <button
+                          type="button"
+                          onClick={() => setIsTimeBased(false)}
+                          className={cn(
+                              "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                              !isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                          )}
+                      >
+                          <CheckCircle className="w-4 h-4" />
+                          Check-off
+                      </button>
+                      <button
+                          type="button"
+                          onClick={() => setIsTimeBased(true)}
+                          className={cn(
+                              "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                              isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                          )}
+                      >
+                          <Timer className="w-4 h-4" />
+                          Time-based
+                      </button>
+                  </div>
                 </div>
 
-                {/* Time Input */}
+                {/* Time Input - Separate row */}
                 <AnimatePresence>
                     {isTimeBased && (
                         <motion.div
@@ -305,32 +307,35 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden"
                         >
-                            <div className="flex gap-4 items-end bg-[#1A1A1A] p-4 rounded-xl border border-surface-border/50">
-                                <div className="flex-1">
-                                    <label className="text-xs text-gray-500 mb-1 block">Hours</label>
-                                    <Input 
-                                        type="number" 
-                                        min="0" 
-                                        max="23"
-                                        value={hours}
-                                        onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                                        className="bg-transparent border-surface-border text-white text-center font-mono text-lg" 
-                                    />
-                                </div>
-                                <span className="text-gray-500 mb-2 font-bold">:</span>
-                                <div className="flex-1">
-                                    <label className="text-xs text-gray-500 mb-1 block">Minutes</label>
-                                    <Input 
-                                        type="number" 
-                                        min="0" 
-                                        max="59" 
-                                        value={minutes}
-                                        onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                                        className="bg-transparent border-surface-border text-white text-center font-mono text-lg" 
-                                    />
-                                </div>
-                                <div className="flex items-center justify-center h-10 px-2 text-primary font-mono text-xs font-bold border border-primary/20 rounded bg-primary/5">
-                                    {hours}h {minutes}m / day
+                            <div className="flex flex-wrap sm:flex-nowrap gap-3 items-center justify-between">
+                                <label className="text-sm font-medium text-text-muted whitespace-nowrap w-full sm:w-auto">Duration</label>
+                                <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                                    <div className="flex-1 sm:flex-none sm:w-16">
+                                        <label className="text-[10px] text-gray-500 mb-1 block text-center">Hours</label>
+                                        <Input 
+                                            type="number" 
+                                            min="0" 
+                                            max="23"
+                                            value={hours}
+                                            onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                                            className="bg-transparent border-surface-border text-white text-center font-mono text-base h-10" 
+                                        />
+                                    </div>
+                                    <span className="text-gray-500 font-bold mt-4">:</span>
+                                    <div className="flex-1 sm:flex-none sm:w-16">
+                                        <label className="text-[10px] text-gray-500 mb-1 block text-center">Minutes</label>
+                                        <Input 
+                                            type="number" 
+                                            min="0" 
+                                            max="59" 
+                                            value={minutes}
+                                            onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                                            className="bg-transparent border-surface-border text-white text-center font-mono text-base h-10" 
+                                        />
+                                    </div>
+                                    <div className="hidden sm:flex items-center justify-center h-10 px-3 mt-4 text-primary font-mono text-xs font-bold border border-primary/20 rounded-lg bg-primary/5 whitespace-nowrap">
+                                        {hours}h {minutes}m / day
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

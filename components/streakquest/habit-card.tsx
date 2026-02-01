@@ -205,10 +205,24 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* Category Tag - Always Visible */}
-                    <span className="text-[10px] text-gray-500 capitalize font-medium bg-surface-dark-lighter px-2 py-0.5 rounded-full border border-surface-border">
-                        {habit.category}
-                    </span>
+                    {/* Category Dot - Minimal colored indicator */}
+                    {(() => {
+                        const categoryColors = {
+                            health: 'bg-emerald-400',
+                            work: 'bg-blue-400',
+                            learning: 'bg-purple-400',
+                            other: 'bg-amber-400',
+                        };
+                        const dotColor = categoryColors[habit.category] || categoryColors.other;
+                        return (
+                            <div className="flex items-center gap-1.5">
+                                <span className={cn("w-1.5 h-1.5 rounded-full", dotColor)} />
+                                <span className="text-[10px] text-gray-500 capitalize font-medium">
+                                    {habit.category}
+                                </span>
+                            </div>
+                        );
+                    })()}
                     
                     {/* Timer Info - Only for Time-Based Habits */}
                     {isTimeBased && (
