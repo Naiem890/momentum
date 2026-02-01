@@ -44,7 +44,7 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
           {/* Section 1: Focus / Current Objective */}
           <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-white tracking-widest uppercase opacity-90">Current Objective</h3>
+                  <h3 className="text-xs font-bold text-white tracking-widest uppercase opacity-90">Milestones & Badges</h3>
                   <div className={cn(
                       "px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border flex items-center gap-1.5",
                       isMastered 
