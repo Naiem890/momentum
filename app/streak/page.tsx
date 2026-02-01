@@ -38,8 +38,6 @@ export default function StreakQuestPage() {
   // --- Data State ---
   const [habits, setHabits] = useState<Habit[]>([]);
   const [stats, setStats] = useState<UserStats>({
-    xp: 0,
-    level: 1,
     totalHabitsCompleted: 0,
     longestStreak: 0,
     lastLogin: new Date().toISOString().split('T')[0]
@@ -169,8 +167,7 @@ export default function StreakQuestPage() {
       category,
       streak: 0,
       completedDates: [],
-      createdAt: Date.now(),
-      xpValue: 10 
+      createdAt: Date.now() 
     };
     const newHabits = [...habits, newHabit];
     setHabits(newHabits);
@@ -212,8 +209,8 @@ export default function StreakQuestPage() {
       
       {/* Navbar */}
       <motion.nav 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="max-w-[1400px] w-full mx-auto flex justify-between items-center mb-6 font-mono text-sm tracking-wider shrink-0"
       >
@@ -247,10 +244,9 @@ export default function StreakQuestPage() {
             <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-hidden">
                 {/* Streak Widget */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                  whileHover={{ y: -2 }}
                   className="relative bg-surface-dark rounded-3xl p-8 flex flex-col justify-between h-[280px] shadow-sm overflow-hidden group shrink-0"
                 >
                     {/* Animated top gradient line */}
@@ -315,8 +311,8 @@ export default function StreakQuestPage() {
                 {/* Milestones - Fills remaining height */}
                 <motion.div 
                   className="flex-1 min-h-0"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
                    <Milestones stats={stats} habits={habits} currentStreak={currentStreak} />
@@ -327,8 +323,8 @@ export default function StreakQuestPage() {
             <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-hidden">
                 
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   className="relative overflow-hidden rounded-3xl p-8 flex items-center justify-center shadow-lg min-h-[180px] shrink-0 group m-1"
                 >
                     {/* Background Gradient & Effects */}
@@ -340,8 +336,8 @@ export default function StreakQuestPage() {
 
                     <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto w-full">
                         <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
                           transition={{ delay: 0.2 }}
                           className="flex items-center justify-between w-full mb-4 px-4"
                         >
@@ -369,9 +365,9 @@ export default function StreakQuestPage() {
                             <AnimatePresence mode="wait">
                               <motion.div
                                 key={quote.text}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
                                 transition={{ duration: 0.4 }}
                                 className="flex flex-col items-center gap-4"
                               >
@@ -393,8 +389,8 @@ export default function StreakQuestPage() {
 
                 {/* Active Quests */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
                   className="bg-surface-dark rounded-3xl p-8 flex-1 shadow-sm flex flex-col min-h-0 overflow-hidden"
                 >
@@ -411,10 +407,7 @@ export default function StreakQuestPage() {
                                 {habits.length}
                             </motion.span>
                         </div>
-                        <motion.div
-                          whileHover={{ y: -1 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
+                        <motion.div>
                           <Button 
                               onClick={() => setIsAddModalOpen(true)}
                               className="flex items-center gap-2 bg-primary hover:bg-primary-glow text-background-dark px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] group"
@@ -443,7 +436,6 @@ export default function StreakQuestPage() {
                           >
                               <motion.div
                                 animate={{ 
-                                  y: [0, -10, 0],
                                   rotate: [0, 5, -5, 0]
                                 }}
                                 transition={{ duration: 2, repeat: Infinity }}
@@ -483,8 +475,8 @@ export default function StreakQuestPage() {
 
       {/* Bottom Section - Heatmap */}
       <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
         className="shrink-0 max-w-[1400px] w-full mx-auto"
       >

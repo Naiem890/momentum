@@ -105,7 +105,6 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
                         key={badge.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        whileHover={{ y: -2 }}
                         className="w-10 h-10 rounded-lg bg-surface-dark-lighter border border-primary/30 flex items-center justify-center shrink-0 text-primary shadow-[0_0_10px_rgba(16,185,129,0.2)]"
                         title={badge.name}
                       >

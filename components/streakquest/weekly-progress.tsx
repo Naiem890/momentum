@@ -35,8 +35,8 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
     >
       <Card className={cn("bg-surface-dark border-none shadow-sm rounded-3xl", compact ? "p-0" : "p-0")}>
@@ -88,8 +88,8 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
                         return (
                           <motion.div 
                             key={index} 
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             transition={{ 
                               delay: 0.3 + index * 0.08,
                               type: "spring",
@@ -132,18 +132,17 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
                     }
 
                     return (
-                        <motion.div 
-                          key={index} 
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ 
-                            delay: 0.3 + index * 0.08,
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 20
-                          }}
-                          whileHover={{ y: -3 }}
-                          className="flex flex-col items-center gap-4 group cursor-pointer"
+                          <motion.div 
+                            key={index} 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ 
+                              delay: 0.3 + index * 0.08,
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 20
+                            }}
+                            className="flex flex-col items-center gap-4 group cursor-pointer"
                         >
                             <motion.div 
                               className={cn(
