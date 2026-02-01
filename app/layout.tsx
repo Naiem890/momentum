@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono, Inter, Russo_One, Playfair_Display, Merriweather } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SessionProvider } from "@/components/auth";
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -34,10 +35,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
 }
+

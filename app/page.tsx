@@ -55,6 +55,7 @@ import { MobileNavigation } from '@/components/streakquest/mobile-navigation';
 import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
 import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
 import { MobileAddTaskDrawer } from '@/components/streakquest/mobile-add-task-drawer';
+import { AuthButton } from '@/components/auth';
 
 export default function MomentumDashboard() {
   // --- Theme ---
@@ -379,9 +380,12 @@ export default function MomentumDashboard() {
             className="px-4 pt-4 pb-3"
             style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
           >
-            <div className="flex items-center gap-2 font-mono text-sm tracking-wider">
-              <Flame className="w-5 h-5 text-primary" />
-              <span className="text-gray-400 font-semibold">Momentum</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-mono text-sm tracking-wider">
+                <Flame className="w-5 h-5 text-primary" />
+                <span className="text-gray-400 font-semibold">Momentum</span>
+              </div>
+              <AuthButton />
             </div>
           </div>
         )}
@@ -477,6 +481,7 @@ export default function MomentumDashboard() {
            <Flame className="w-5 h-5 text-primary" />
            Momentum
         </motion.div>
+        <AuthButton />
       </motion.nav>
 
       {/* Quote of the Day - Full Width Top Row */}
