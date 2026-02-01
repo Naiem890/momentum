@@ -102,10 +102,10 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
                           <TooltipTrigger>
                              <div 
                                 className={cn(
-                                  "w-6 h-6 rounded-md flex items-center justify-center border transition-all duration-300",
+                                  "w-6 h-6 rounded-md flex items-center justify-center border transition-all duration-300 cursor-pointer",
                                   badge.earned 
                                     ? "bg-surface-dark-lighter border-primary/30 text-primary shadow-[0_0_10px_rgba(16,185,129,0.1)]" 
-                                    : "bg-surface-dark-lighter/30 border-white/5 text-gray-700 grayscale"
+                                    : "bg-surface-dark-lighter/30 border-white/5 text-gray-700 grayscale hover:grayscale-0 hover:text-primary hover:border-primary/30"
                                 )}
                              >
                                 <badge.icon className="w-3 h-3" />
