@@ -52,7 +52,6 @@ import {
 // Mobile components
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileNavigation } from '@/components/streakquest/mobile-navigation';
-import { MobileHeader } from '@/components/streakquest/mobile-header';
 import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
 import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
 
@@ -373,12 +372,18 @@ export default function MomentumDashboard() {
         {/* Celebration */}
         <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
         
-        {/* Mobile Header */}
-        <MobileHeader 
-          quote={quote}
-          isQuoteLoading={isQuoteLoading}
-          onRefreshQuote={() => loadNewQuote(true)}
-        />
+        {/* Mobile Header - Simple, matching desktop */}
+        {mobileTab === 'tasks' && (
+          <div 
+            className="px-4 pt-4 pb-3"
+            style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
+          >
+            <div className="flex items-center gap-2 font-mono text-sm tracking-wider">
+              <Flame className="w-5 h-5 text-primary" />
+              <span className="text-gray-400 font-semibold">Momentum</span>
+            </div>
+          </div>
+        )}
         
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
@@ -419,6 +424,9 @@ export default function MomentumDashboard() {
                   habits={habits}
                   stats={stats}
                   currentStreak={currentStreak}
+                  quote={quote}
+                  isQuoteLoading={isQuoteLoading}
+                  onRefreshQuote={() => loadNewQuote(true)}
                 />
               </motion.div>
             )}
@@ -465,23 +473,9 @@ export default function MomentumDashboard() {
           className="text-gray-400 font-semibold flex items-center gap-2"
           whileHover={{ color: "white" }}
         >
-           <motion.div
-             animate={{ rotate: [0, 5, -5, 0] }}
-             transition={{ duration: 2, repeat: Infinity }}
-           >
-             <Flame className="w-5 h-5 text-primary" />
-           </motion.div>
+           <Flame className="w-5 h-5 text-primary" />
            Momentum
         </motion.div>
-        <div className="flex items-center gap-4">
-           <motion.div 
-             className="text-[10px] text-gray-600 border border-surface-border px-2 py-1 rounded uppercase"
-             animate={{ opacity: [0.5, 1, 0.5] }}
-             transition={{ duration: 3, repeat: Infinity }}
-           >
-             &lt;Focus Mode&gt;
-           </motion.div>
-        </div>
       </motion.nav>
 
       {/* Quote of the Day - Full Width Top Row */}
