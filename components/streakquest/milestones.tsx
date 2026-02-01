@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { UserStats, Habit } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { Zap, Flame, Award, Medal, Crown, Star, Lock, Unlock } from 'lucide-react';
 
 interface MilestonesProps {
@@ -59,13 +60,17 @@ export function Milestones({ stats, habits }: MilestonesProps) {
          className="flex justify-between items-center mb-6 shrink-0"
        >
            <h3 className="font-semibold text-lg text-white">Milestone Badges</h3>
-           <motion.button 
+           <motion.div
              whileHover={{ scale: 1.05, x: 3 }}
              whileTap={{ scale: 0.95 }}
-             className="text-xs font-mono text-primary hover:text-primary-glow transition-colors uppercase tracking-wider cursor-pointer"
            >
+             <Button 
+               variant="link"
+               className="text-xs font-mono text-primary hover:text-primary-glow transition-colors uppercase tracking-wider p-0 h-auto"
+             >
                VIEW ALL
-           </motion.button>
+             </Button>
+           </motion.div>
        </motion.div>
        
        {/* Badges Grid */}

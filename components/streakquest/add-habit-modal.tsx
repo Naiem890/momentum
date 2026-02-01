@@ -112,20 +112,23 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                   const Icon = cat.icon;
                   const isSelected = category === cat.id;
                   return (
-                    <motion.button
+                    <motion.div
                       key={cat.id}
-                      type="button"
                       variants={itemVariants}
-                      onClick={() => setCategory(cat.id)}
                       whileHover={{ scale: 1.03, y: -2 }}
                       whileTap={{ scale: 0.97 }}
-                      className={cn(
-                        "relative flex items-center gap-3 px-4 py-4 rounded-xl border-2 transition-all overflow-hidden cursor-pointer",
-                        isSelected
-                          ? 'border-primary bg-primary/10'
-                          : 'border-surface-border bg-background-dark hover:border-surface-border/80'
-                      )}
                     >
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setCategory(cat.id)}
+                        className={cn(
+                          "relative flex items-center gap-3 px-4 py-4 h-auto rounded-xl border-2 transition-all overflow-hidden w-full justify-start",
+                          isSelected
+                            ? 'border-primary bg-primary/10 hover:bg-primary/10'
+                            : 'border-surface-border bg-background-dark hover:border-surface-border/80 hover:bg-background-dark'
+                        )}
+                      >
                       {/* Gradient background on select */}
                       <AnimatePresence>
                         {isSelected && (
@@ -173,7 +176,8 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </motion.button>
+                      </Button>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -187,7 +191,7 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
               <Button
                 type="submit"
                 disabled={!title.trim()}
-                className="w-full bg-primary hover:bg-primary-glow text-white font-bold py-6 shadow-lg shadow-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                className="w-full bg-primary hover:bg-primary-glow font-bold py-6 shadow-lg shadow-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
               >
                 <motion.span
                   className="relative z-10 flex items-center justify-center gap-2"
