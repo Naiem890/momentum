@@ -333,8 +333,8 @@ export default function MomentumDashboard() {
   const additionalTasks = habits.filter(h => !h.isStreakable);
 
   // Current streak is based on streakable habits only
-  const currentStreak = streakableTasks.length > 0 ? Math.max(...streakableTasks.map(h => h.streak)) : 0;
-  // const currentStreak = 365; // MOCK FOR DEMO
+  // const currentStreak = streakableTasks.length > 0 ? Math.max(...streakableTasks.map(h => h.streak)) : 0;
+  const currentStreak = 100; // MOCK FOR DEMO
 
   if (!mounted) {
     return (
