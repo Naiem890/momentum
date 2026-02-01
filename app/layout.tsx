@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StreakQuest OS",
+  title: "Momentum",
   description: "Gamified habit tracking",
 };
 

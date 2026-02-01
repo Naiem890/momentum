@@ -18,7 +18,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     // Check localStorage or system preference
-    const stored = localStorage.getItem('streakquest-theme') as Theme | null;
+    const stored = localStorage.getItem('momentum-theme') as Theme | null;
     if (stored) {
       setTheme(stored);
     }
@@ -35,7 +35,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.remove('dark');
       root.classList.add('light');
     }
-    localStorage.setItem('streakquest-theme', theme);
+    localStorage.setItem('momentum-theme', theme);
   }, [theme, mounted]);
 
   const toggleTheme = () => {

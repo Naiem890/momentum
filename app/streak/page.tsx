@@ -244,7 +244,7 @@ export default function StreakQuestPage() {
            >
              <Flame className="w-5 h-5 text-primary" />
            </motion.div>
-           StreakQuest <span className="text-primary">OS</span>
+           Momentum
         </motion.div>
         <div className="flex items-center gap-4">
            <motion.div 
@@ -416,7 +416,7 @@ export default function StreakQuestPage() {
                 >
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
-                            <h3 className="font-semibold text-lg text-white">Active Quests</h3>
+                            <h3 className="font-semibold text-lg text-white">Active Protocols</h3>
                             <motion.span 
                               className="px-2 py-0.5 rounded-full bg-surface-dark-lighter text-xs font-mono font-bold text-gray-500"
                               key={habits.length}
@@ -442,7 +442,7 @@ export default function StreakQuestPage() {
                               >
                                 <Plus className="w-4 h-4" />
                               </motion.div>
-                              New Quest
+                              New Protocol
                           </Button>
                         </motion.div>
                     </div>
@@ -465,7 +465,7 @@ export default function StreakQuestPage() {
                               >
                                 <Zap className="w-12 h-12 text-surface-border mb-4 group-hover:text-primary/50 transition-colors" />
                               </motion.div>
-                              <h4 className="text-gray-400 font-medium mb-1">No Active Quests</h4>
+                              <h4 className="text-gray-400 font-medium mb-1">No Active Protocols</h4>
                               <p className="text-sm text-gray-600">Initialize your first protocol to begin.</p>
                           </motion.div>
                       ) : (

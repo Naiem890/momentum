@@ -1,7 +1,7 @@
 import { Habit, UserStats } from './types';
 
-const HABITS_KEY = 'streakquest_habits';
-const STATS_KEY = 'streakquest_stats';
+const HABITS_KEY = 'momentum_habits';
+const STATS_KEY = 'momentum_stats';
 
 const DEFAULT_STATS: UserStats = {
 
