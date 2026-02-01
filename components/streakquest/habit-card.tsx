@@ -141,6 +141,8 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
         "group relative rounded-2xl border transition-all duration-300 overflow-hidden select-none cursor-pointer",
         isCompleted
           ? "bg-primary/10 border-primary/20"
+          : isActive
+          ? "bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/10"
           : "bg-surface-dark border-surface-border hover:border-surface-border-hover hover:bg-surface-dark-lighter",
         "h-[72px] flex items-center pr-4" 
       )}
@@ -171,7 +173,7 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                 <div className="flex items-center gap-2">
                     <h3 className={cn(
                         "font-bold text-base truncate transition-colors",
-                         isCompleted ? "text-primary/90 line-through decoration-primary/50" : "text-white"
+                         isCompleted ? "text-primary/90 line-through decoration-primary/70 decoration-3" : "text-white"
                     )}>
                         {habit.title}
                     </h3>
@@ -184,17 +186,23 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                     )}
                 </div>
 
-                {isTimeBased ? (
-                     <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                         <span className={cn(isActive && "text-amber-400 font-bold")}>
-                             {formatTime(currentMinutes)}
-                         </span>
-                         <span className="opacity-30">/</span>
-                         <span>{formatTime(targetMinutes)}</span>
-                     </div>
-                ) : (
-                    <p className="text-xs text-gray-500 capitalize font-medium">{habit.category}</p>
-                )}
+                <div className="flex items-center gap-2">
+                    {/* Category Tag - Always Visible */}
+                    <span className="text-[10px] text-gray-500 capitalize font-medium bg-surface-dark-lighter px-2 py-0.5 rounded-full border border-surface-border">
+                        {habit.category}
+                    </span>
+                    
+                    {/* Timer Info - Only for Time-Based Habits */}
+                    {isTimeBased && (
+                        <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+                            <span className={cn(isActive && "text-amber-400 font-bold")}>
+                                {formatTime(currentMinutes)}
+                            </span>
+                            <span className="opacity-30">/</span>
+                            <span>{formatTime(targetMinutes)}</span>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* 3. Action Buttons (Always Visible) */}
