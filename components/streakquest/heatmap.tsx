@@ -120,13 +120,13 @@ export function Heatmap({ habits }: HeatmapProps) {
                {filters.map((f) => (
                    <Button
                        key={f.id}
-                       variant="ghost"
+                       variant= {filter === f.id ? "default" : "ghost"}
                        size="sm"
                        onClick={() => setFilter(f.id)}
                        className={cn(
                            "px-4 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
                            filter === f.id 
-                               ? "bg-primary text-white shadow-sm hover:bg-primary" 
+                               ? "bg-primary shadow-sm hover:bg-primary" 
                                : "text-gray-400 hover:text-white hover:bg-transparent"
                        )}
                    >
