@@ -49,6 +49,13 @@ import {
   Circle,
 } from 'lucide-react';
 
+// Mobile components
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileNavigation } from '@/components/streakquest/mobile-navigation';
+import { MobileHeader } from '@/components/streakquest/mobile-header';
+import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
+import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
+
 export default function MomentumDashboard() {
   // --- Theme ---
   const { theme, toggleTheme } = useTheme();
@@ -70,6 +77,10 @@ export default function MomentumDashboard() {
   const [completedTasks, setCompletedTasks] = useState<Habit[]>([]); // Completed one-time tasks
   const [taskFilter, setTaskFilter] = useState<'all' | 'daily' | 'onetime' | 'completed'>('all');
   const [taskToRestore, setTaskToRestore] = useState<Habit | null>(null); // For restore confirmation
+  const [mobileTab, setMobileTab] = useState<'tasks' | 'stats'>('tasks');
+  
+  // Mobile detection
+  const isMobile = useIsMobile();
 
   const loadNewQuote = async (saveToCache: boolean = false) => {
     setIsQuoteLoading(true);
@@ -352,7 +363,91 @@ export default function MomentumDashboard() {
       </div>
     );
   }
+
+  // ============================================
+  // MOBILE LAYOUT
+  // ============================================
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-background-dark text-gray-300 flex flex-col">
+        {/* Celebration */}
+        <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
+        
+        {/* Mobile Header */}
+        <MobileHeader 
+          quote={quote}
+          isQuoteLoading={isQuoteLoading}
+          onRefreshQuote={() => loadNewQuote(true)}
+        />
+        
+        {/* Content Area */}
+        <div className="flex-1 overflow-hidden">
+          <AnimatePresence mode="wait">
+            {mobileTab === 'tasks' ? (
+              <motion.div
+                key="tasks"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="h-full"
+              >
+                <MobileTaskList
+                  habits={habits}
+                  completedTasks={completedTasks}
+                  onToggle={handleToggleHabit}
+                  onDelete={handleDeleteHabit}
+                  onEdit={handleEditClick}
+                  onProgress={handleUpdateProgress}
+                  onCompleteAdditional={handleCompleteAdditionalTask}
+                  onRestoreTask={handleRestoreTask}
+                  onDeleteCompletedTask={handleDeleteCompletedTask}
+                  onAddNew={() => {
+                    setEditingHabit(null);
+                    setIsAddModalOpen(true);
+                  }}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="stats"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="h-full overflow-y-auto"
+              >
+                <MobileStatsView
+                  habits={habits}
+                  stats={stats}
+                  currentStreak={currentStreak}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        {/* Mobile Bottom Navigation */}
+        <MobileNavigation 
+          activeTab={mobileTab}
+          onTabChange={setMobileTab}
+        />
+
+        {/* Add/Edit Modal */}
+        <AddHabitModal 
+          isOpen={isAddModalOpen} 
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setEditingHabit(null);
+          }} 
+          onSave={handleSaveHabit}
+          initialData={editingHabit}
+        />
+      </div>
+    );
+  }
   
+  // ============================================
+  // DESKTOP LAYOUT
+  // ============================================
   return (
     <div className="min-h-screen bg-background-dark text-gray-300 p-4 md:p-6 transition-colors duration-300">
       
