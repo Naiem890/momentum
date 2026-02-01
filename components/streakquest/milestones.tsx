@@ -68,7 +68,7 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
                "px-2 py-0.5 rounded-full text-xs font-mono font-bold",
                isMastered ? "bg-primary/20 text-primary" : "bg-surface-dark-lighter text-primary"
              )}
-             animate={{ opacity: [0.7, 1, 0.7] }}
+             animate={{ opacity: [0.8, 1, 0.8] }}
              transition={{ duration: 2, repeat: Infinity }}
            >
              {isMastered ? 'MASTERED' : 'IN PROGRESS'}
@@ -77,8 +77,8 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
 
        {/* Hero Badge - Spotlight */}
        <motion.div 
-         initial={{ scale: 0.9, opacity: 0 }}
-         animate={{ scale: 1, opacity: 1 }}
+         initial={{ opacity: 0 }}
+         animate={{ opacity: 1 }}
          className="flex-1 flex flex-col items-center justify-center p-4 bg-surface-dark-lighter rounded-2xl border border-primary/20 relative overflow-hidden group mb-4"
        >
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
@@ -123,9 +123,9 @@ export function Milestones({ stats, habits, currentStreak }: MilestonesProps) {
                 {earnedBadges.map(badge => (
                   <motion.div
                     key={badge.id}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    whileHover={{ y: -2, scale: 1.1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    whileHover={{ y: -2 }}
                     className="w-10 h-10 rounded-lg bg-surface-dark-lighter border border-primary/30 flex items-center justify-center shrink-0 text-primary shadow-[0_0_10px_rgba(16,185,129,0.2)]"
                     title={badge.name}
                   >

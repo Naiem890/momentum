@@ -182,8 +182,7 @@ export default function StreakQuestPage() {
         <motion.div 
           className="text-primary"
           animate={{ 
-            opacity: [0.5, 1, 0.5],
-            scale: [0.98, 1.02, 0.98]
+            opacity: [0.5, 1, 0.5]
           }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
@@ -208,7 +207,7 @@ export default function StreakQuestPage() {
       >
         <motion.div 
           className="text-gray-400 font-semibold flex items-center gap-2"
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ color: "white" }}
         >
            <motion.div
              animate={{ rotate: [0, 5, -5, 0] }}
@@ -236,10 +235,10 @@ export default function StreakQuestPage() {
             <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-hidden">
                 {/* Streak Widget */}
                 <motion.div 
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                  whileHover={{ scale: 1.01 }}
+                  whileHover={{ y: -2 }}
                   className="relative bg-surface-dark rounded-3xl p-8 flex flex-col justify-between h-[280px] shadow-sm overflow-hidden group shrink-0"
                 >
                     {/* Animated top gradient line */}
@@ -253,7 +252,6 @@ export default function StreakQuestPage() {
                     <motion.div
                       className="absolute -top-20 -right-20 w-60 h-60 bg-primary/10 rounded-full blur-3xl"
                       animate={{ 
-                        scale: [1, 1.2, 1],
                         opacity: [0.2, 0.4, 0.2]
                       }}
                       transition={{ duration: 4, repeat: Infinity }}
@@ -274,8 +272,8 @@ export default function StreakQuestPage() {
                     <div className="flex flex-col items-start relative z-10">
                         <motion.h1 
                           className="text-[10rem] leading-none font-bold font-mono tracking-tighter text-white drop-shadow-2xl"
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
                           transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
                         >
                             <AnimatedCounter value={currentStreak} />
@@ -287,7 +285,7 @@ export default function StreakQuestPage() {
                           transition={{ delay: 0.4 }}
                         >
                           <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
+                            animate={{ opacity: [0.7, 1, 0.7] }}
                             transition={{ duration: 1, repeat: Infinity }}
                           >
                             🔥
@@ -394,16 +392,16 @@ export default function StreakQuestPage() {
                             <motion.span 
                               className="px-2 py-0.5 rounded-full bg-surface-dark-lighter text-xs font-mono font-bold text-gray-500"
                               key={habits.length}
-                              initial={{ scale: 1.3 }}
-                              animate={{ scale: 1 }}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
                               transition={{ type: "spring", stiffness: 500 }}
                             >
                                 {habits.length}
                             </motion.span>
                         </div>
                         <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ y: -1 }}
+                          whileTap={{ scale: 0.98 }}
                         >
                           <Button 
                               onClick={() => setIsAddModalOpen(true)}
@@ -426,9 +424,9 @@ export default function StreakQuestPage() {
                       {habits.length === 0 ? (
                           <motion.div 
                             key="empty"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             className="flex-1 border border-dashed border-surface-border rounded-2xl flex flex-col items-center justify-center p-12 group hover:border-primary/30 transition-colors"
                           >
                               <motion.div

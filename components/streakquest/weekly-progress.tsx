@@ -117,7 +117,6 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
                                   <motion.div 
                                     className={cn("bg-primary rounded-full", compact ? "w-1.5 h-1.5" : "w-2.5 h-2.5")}
                                     animate={{ 
-                                      scale: [1, 1.3, 1],
                                       opacity: [1, 0.8, 1]
                                     }}
                                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -145,7 +144,7 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
                             stiffness: 500,
                             damping: 20
                           }}
-                          whileHover={{ scale: 1.2, y: -3 }}
+                          whileHover={{ y: -3 }}
                           className="flex flex-col items-center gap-4 group cursor-pointer"
                         >
                             <motion.div 
@@ -158,7 +157,7 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
                                       : "bg-primary/60" 
                                     : "bg-gray-600 group-hover:bg-gray-500"
                               )}
-                              whileHover={{ scale: 1.3 }}
+
                             />
                             <span className={cn("text-gray-600 font-mono group-hover:text-gray-400 transition-colors", compact ? "text-[10px]" : "text-xs")}>
                                 {dayName}

@@ -70,8 +70,7 @@ export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = fals
         delay: index * 0.05
       }}
       whileHover={{ 
-        scale: compact ? 1.01 : 1.02,
-        y: compact ? -1 : -4,
+        y: compact ? -1 : -2,
         transition: { duration: 0.2 }
       }}
       whileTap={{ scale: 0.98 }}
@@ -114,7 +113,6 @@ export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = fals
           )}
           animate={isCompleted ? {
             rotate: [0, -10, 10, -5, 5, 0],
-            scale: [1, 1.1, 1]
           } : {}}
           transition={{ duration: 0.5 }}
         >
@@ -123,7 +121,7 @@ export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = fals
 
         {!compact && (
           <motion.div
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ opacity: 0.8 }}
             whileTap={{ scale: 0.9 }}
           >
             <Switch 

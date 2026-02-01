@@ -81,24 +81,18 @@ export function StreakFire({ streak }: { streak: number }) {
     <motion.div
       className="relative"
       initial={{ scale: 1 }}
-      animate={{ 
-        scale: [1, 1.05, 1],
-      }}
-      transition={{
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
+      className="relative"
+      initial={{ scale: 1 }}
+      animate={{ scale: 1 }}
     >
       {/* Glow effect */}
       <motion.div
         className="absolute -inset-4 bg-primary/20 rounded-full blur-xl"
         animate={{
-          opacity: [0.3, 0.6, 0.3],
-          scale: [0.9, 1.1, 0.9],
+          opacity: [0.3, 0.5, 0.3],
         }}
         transition={{
-          duration: 2,
+          duration: 3,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -107,7 +101,7 @@ export function StreakFire({ streak }: { streak: number }) {
       {/* Main fire icon container */}
       <motion.div
         className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center relative z-10"
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ y: -2 }}
         whileTap={{ scale: 0.95 }}
       >
         <motion.svg
