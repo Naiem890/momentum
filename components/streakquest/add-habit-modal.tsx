@@ -108,7 +108,7 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-surface-dark border-surface-border max-w-md overflow-hidden">
+      <DialogContent className="bg-surface-dark border-surface-border sm:max-w-xl overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -232,34 +232,32 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                  initial={{ opacity: 0 }}
                  animate={{ opacity: 1 }}
                  transition={{ delay: 0.25 }}
-                 className="space-y-3"
+                 className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4"
             >
-                <label className="block text-sm font-medium text-text-muted">Task Type</label>
-                <div className="flex items-center gap-3">
-                    <div className="flex w-full gap-2 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
-                        <button
-                            type="button"
-                            onClick={() => setIsStreakable(true)}
-                            className={cn(
-                                "flex grow-1 items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
-                                isStreakable ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
-                            )}
-                        >
-                            <Repeat className="w-4 h-4" />
-                            Daily
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setIsStreakable(false)}
-                            className={cn(
-                                "flex grow-1 items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
-                                !isStreakable ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
-                            )}
-                        >
-                            <Circle className="w-4 h-4" />
-                            One Time
-                        </button>
-                    </div>
+                <label className="text-sm font-medium text-text-muted whitespace-nowrap">Task Type</label>
+                <div className="flex w-full sm:w-auto gap-2 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
+                    <button
+                        type="button"
+                        onClick={() => setIsStreakable(true)}
+                        className={cn(
+                            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                            isStreakable ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                        )}
+                    >
+                        <Repeat className="w-4 h-4" />
+                        Daily
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsStreakable(false)}
+                        className={cn(
+                            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                            !isStreakable ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                        )}
+                    >
+                        <Circle className="w-4 h-4" />
+                        One Time
+                    </button>
                 </div>
             </motion.div>
 
@@ -270,15 +268,15 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                  initial={{ height: 0, opacity: 0 }}
                  animate={{ height: "auto", opacity: 1 }}
                  exit={{ height: 0, opacity: 0 }}
-                 className="space-y-4 overflow-hidden"
+                 className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4 overflow-hidden"
             >
-                <label className="block text-sm font-medium text-text-muted">Goal Type</label>
-                <div className="flex gap-4 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
+                <label className="text-sm font-medium text-text-muted whitespace-nowrap">Goal Type</label>
+                <div className="flex w-full sm:w-auto gap-2 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
                     <button
                         type="button"
                         onClick={() => setIsTimeBased(false)}
                         className={cn(
-                            "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all",
+                            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
                             !isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
                         )}
                     >
@@ -289,7 +287,7 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                         type="button"
                         onClick={() => setIsTimeBased(true)}
                         className={cn(
-                            "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all",
+                            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
                             isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
                         )}
                     >
