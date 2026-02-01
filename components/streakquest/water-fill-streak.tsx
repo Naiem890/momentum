@@ -25,12 +25,12 @@ export function WaterFillStreak({ value, progress, className }: WaterFillStreakP
   // We layout text roughly in the middle.
   // We want 0% to be below text, 100% to be above text.
   // Text BBox vertical estimation:
-  // Center is 60 (50% of 120). Font size 100 is quite large.
-  // Cap-height is approx 0.7 * size = 70px.
-  // So text spans approx Y=25 to Y=95.
-  // We'll set the "Empty" water level at Y=110 and "Full" at Y=10.
-  const bottomY = 110;
-  const topY = 10;
+  // Center is 66 (55% of 120). Font size 100.
+  // Approximate glyph bounds: Y=30 to Y=102.
+  // We tighten the range so 50% progress actually looks 50% filled.
+  // Previous range (10-110) was too loose, causing 66% to visual fill ~80%.
+  const bottomY = 105; // Just below the text baseline
+  const topY = 25;     // Just above the text cap-height
   const fillRange = bottomY - topY;
   const currentY = bottomY - (progress * fillRange);
 
