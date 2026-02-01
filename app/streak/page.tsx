@@ -433,7 +433,7 @@ export default function StreakQuestPage() {
                                 setEditingHabit(null);
                                 setIsAddModalOpen(true);
                               }}
-                              className="flex items-center gap-2 bg-primary hover:bg-primary-glow text-background-dark px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] group"
+                              className="flex items-center gap-2 bg-primary text-background-dark px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] group"
                           >
                               <motion.div
                                 animate={{ rotate: [0, 90, 0] }}
