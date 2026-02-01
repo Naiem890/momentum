@@ -9,6 +9,7 @@ import {
   saveUserStats
 } from '@/lib/storage';
 import { Habit, UserStats, HabitCategory } from '@/lib/types';
+import { fetchQuote, Quote as QuoteType, MOTIVATIONAL_QUOTES } from '@/lib/quotes';
 import { HabitCard } from '@/components/streakquest/habit-card';
 import { Heatmap } from '@/components/streakquest/heatmap';
 import { Milestones } from '@/components/streakquest/milestones';
@@ -24,6 +25,7 @@ import {
   Quote,
   Moon,
   Sun,
+  RefreshCw,
 } from 'lucide-react';
 
 export default function StreakQuestPage() {
@@ -43,12 +45,24 @@ export default function StreakQuestPage() {
   const [mounted, setMounted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [previousStreak, setPreviousStreak] = useState(0);
+  const [quote, setQuote] = useState<QuoteType>(MOTIVATIONAL_QUOTES[0]);
+  const [isQuoteLoading, setIsQuoteLoading] = useState(false);
+
+  const loadNewQuote = async () => {
+    setIsQuoteLoading(true);
+    const newQuote = await fetchQuote();
+    setQuote(newQuote);
+    setIsQuoteLoading(false);
+  };
 
   // Initialization
   useEffect(() => {
     setMounted(true);
     const loadedHabits = getHabits();
     const loadedStats = getUserStats();
+    
+    // Load initial quote
+    loadNewQuote();
     
     // Streak check logic
     const today = new Date();
@@ -294,28 +308,53 @@ export default function StreakQuestPage() {
                       className="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
                     />
 
-                    <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto">
+                    <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto w-full">
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.2 }}
-                          className="flex items-center gap-2 mb-4"
+                          className="flex items-center justify-between w-full mb-4 px-4"
                         >
+                            <div className="w-8" /> {/* Spacer */}
                             <span className="text-sm font-display text-primary uppercase tracking-[0.2em] drop-shadow-sm">Quote of the day</span>
+                            
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={loadNewQuote}
+                              disabled={isQuoteLoading}
+                              className="text-primary/50 hover:text-primary hover:bg-primary/10 transition-colors w-8 h-8 rounded-full"
+                            >
+                                <motion.div
+                                  animate={isQuoteLoading ? { rotate: 360 } : { rotate: 0 }}
+                                  transition={isQuoteLoading ? { duration: 1, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
+                                >
+                                  <RefreshCw className="w-4 h-4" />
+                                </motion.div>
+                            </Button>
                         </motion.div>
 
-                        <div className="relative">
-                            <Quote className="absolute -top-8 -left-10 w-10 h-10 text-primary/20 rotate-180" />
-                            <motion.p 
-                              className="text-2xl md:text-4xl font-display text-white leading-tight tracking-wide drop-shadow-md"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.3 }}
-                              style={{ fontStyle: 'italic' }} 
-                            >
-                                Discipline is doing what needs to be done, even if you don&apos;t want to do it.
-                            </motion.p>
-                            <Quote className="absolute -bottom-8 -right-10 w-10 h-10 text-primary/20" />
+                        <div className="relative px-8">
+                            <Quote className="absolute -top-6 -left-2 w-8 h-8 text-primary/20 rotate-180" />
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={quote.text}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.4 }}
+                                className="flex flex-col items-center gap-4"
+                              >
+                                <p 
+                                  className="text-2xl md:text-3xl font-display text-white leading-tight tracking-wide drop-shadow-md"
+                                  style={{ fontStyle: 'italic' }} 
+                                >
+                                    &quot;{quote.text}&quot;
+                                </p>
+                                <span className="text-gray-400 font-mono text-sm tracking-wider opacity-80">— {quote.author}</span>
+                              </motion.div>
+                            </AnimatePresence>
+                            <Quote className="absolute -bottom-6 -right-2 w-8 h-8 text-primary/20" />
                         </div>
                     </div>
                 </motion.div>
