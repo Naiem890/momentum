@@ -490,6 +490,7 @@ export default function MomentumDashboard() {
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
                             <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-3">
+                              <div className="w-2 h-2 rounded-full bg-primary" />
                               Active Tasks
                             </h3>
                             <motion.span 

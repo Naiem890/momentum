@@ -146,7 +146,7 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
           ? "bg-primary/10 border-primary/20"
           : isActive
           ? "bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/10"
-          : "bg-surface-dark border-surface-border hover:border-surface-border-hover hover:bg-surface-dark-lighter",
+          : "bg-surface-dark-lighter/20 border-surface-border hover:border-surface-border-hover hover:bg-surface-dark-lighter",
         "h-[72px] flex items-center pr-4" 
       )}
     >

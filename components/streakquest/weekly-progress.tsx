@@ -75,7 +75,7 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
 
          {/* Header */}
          <div className="relative z-10 flex items-center justify-between mb-6">
-            <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-gray-500">Weekly Progress</h2>
+                            <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-gray-500">Weekly Progress</h2>
          </div>
 
          <div className="flex items-start justify-between relative z-10 w-full flex-1">

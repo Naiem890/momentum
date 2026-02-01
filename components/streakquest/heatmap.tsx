@@ -87,14 +87,14 @@ export function Heatmap({ habits }: HeatmapProps) {
   };
 
   const getCellColor = (intensity: number) => {
-    if (intensity === -1) return 'bg-[#1f1f1f] opacity-50'; // Future dates match blank but dimmer
+    if (intensity === -1) return 'bg-surface-dark-lighter/70 opacity-50'; // Future dates match blank but dimmer
     switch (intensity) {
-      case 0: return 'bg-[#1f1f1f]';
+      case 0: return 'bg-surface-dark-lighter';
       case 1: return 'bg-primary/30';
       case 2: return 'bg-primary/60';
       case 3: return 'bg-primary';
       case 4: return 'bg-primary shadow-[0_0_8px_#10b981]';
-      default: return 'bg-[#1f1f1f]';
+      default: return 'bg-surface-dark-lighter/30';
     }
   };
 
@@ -204,7 +204,7 @@ export function Heatmap({ habits }: HeatmapProps) {
         <div className="flex items-center justify-end gap-2 mt-4 text-xs text-gray-400">
             <span>Less</span>
             <div className="flex gap-1">
-                <div className="w-3 h-3 rounded-sm bg-[#1f1f1f]"></div>
+                <div className="w-3 h-3 rounded-sm bg-surface-dark-lighter/30"></div>
                 <div className="w-3 h-3 rounded-sm bg-primary/30"></div>
                 <div className="w-3 h-3 rounded-sm bg-primary/60"></div>
                 <div className="w-3 h-3 rounded-sm bg-primary"></div>
