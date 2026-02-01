@@ -14,22 +14,38 @@ import {
   Code,
   PenTool,
   Dumbbell,
-  Flame
+  Flame,
+  MoreVertical,
+  Pencil,
+  Trash
 } from 'lucide-react';
 
 interface HabitCardProps {
   habit: Habit;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (habit: Habit) => void;
   index?: number;
   compact?: boolean;
 }
 
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 // ... interface ...
 
-export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = false }: HabitCardProps) {
+export function HabitCard({ habit, onToggle, onDelete, onEdit, index = 0, compact = false }: HabitCardProps) {
   const today = new Date().toISOString().split('T')[0];
   const isCompleted = habit.completedDates.includes(today);
   const [showPulse, setShowPulse] = useState(false);
@@ -116,12 +132,53 @@ export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = fals
           </div>
 
           {!compact && (
-            <div>
-              <Switch 
+            <div className="flex items-center gap-1 group-hover:opacity-100 opacity-0 transition-opacity">
+               <Switch 
                 checked={isCompleted} 
                 onCheckedChange={handleToggle}
                 onClick={(e) => e.stopPropagation()}
               />
+              <div className="w-px h-4 bg-surface-border mx-2" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-500 hover:text-white hover:bg-surface-dark-lighter"
+                onClick={(e) => { e.stopPropagation(); onEdit(habit); }}
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-gray-500 hover:text-red-400 hover:bg-red-500/10"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-surface-dark border-surface-border text-gray-200">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-white">Delete Quest?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-400">
+                      Are you sure you want to delete <span className="text-primary font-bold">{habit.title}</span>? This action cannot be undone and your streak will be lost.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="bg-surface-dark-lighter border-surface-border text-white hover:bg-surface-border hover:text-white" onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      className="bg-red-500 hover:bg-red-600 text-white border-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(habit.id);
+                      }}
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           )}
         </div>
@@ -167,7 +224,49 @@ export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = fals
              </AnimatePresence>
 
              {compact && (
-                <div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-gray-500 hover:text-white hover:bg-surface-dark-lighter opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => { e.stopPropagation(); onEdit(habit); }}
+                    title="Edit"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-gray-500 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
+                        title="Delete"
+                      >
+                        <Trash className="w-3 h-3" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-surface-dark border-surface-border text-gray-200">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-white">Delete Quest?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-gray-400">
+                          Are you sure you want to delete <span className="text-primary font-bold">{habit.title}</span>? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="bg-surface-dark-lighter border-surface-border text-white hover:bg-surface-border hover:text-white" onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                          className="bg-red-500 hover:bg-red-600 text-white border-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(habit.id);
+                          }}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                   <Switch 
                     checked={isCompleted} 
                     onCheckedChange={handleToggle}

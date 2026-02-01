@@ -48,6 +48,7 @@ export default function StreakQuestPage() {
   const [previousStreak, setPreviousStreak] = useState(0);
   const [quote, setQuote] = useState<QuoteType>(MOTIVATIONAL_QUOTES[0]);
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
   const loadNewQuote = async (saveToCache: boolean = false) => {
     setIsQuoteLoading(true);
@@ -160,26 +161,45 @@ export default function StreakQuestPage() {
     }
   }, [habits, previousStreak]);
 
-  const handleAddHabit = (title: string, category: HabitCategory) => {
-    const newHabit: Habit = {
-      id: crypto.randomUUID(),
-      title,
-      category,
-      streak: 0,
-      completedDates: [],
-      createdAt: Date.now() 
-    };
-    const newHabits = [...habits, newHabit];
-    setHabits(newHabits);
-    saveHabits(newHabits);
-  };
-
-  const handleDeleteHabit = (id: string) => {
-    if (confirm("Are you sure you want to delete this quest?")) {
-      const newHabits = habits.filter(h => h.id !== id);
+  const handleSaveHabit = (title: string, category: HabitCategory) => {
+    if (editingHabit) {
+      // Update existing
+      setHabits(prev => {
+        const newHabits = prev.map(h => 
+          h.id === editingHabit.id 
+            ? { ...h, title, category } 
+            : h
+        );
+        saveHabits(newHabits);
+        return newHabits;
+      });
+      setEditingHabit(null);
+    } else {
+      // Create new
+      const newHabit: Habit = {
+        id: crypto.randomUUID(),
+        title,
+        category,
+        streak: 0,
+        completedDates: [],
+        createdAt: Date.now() 
+      };
+      const newHabits = [...habits, newHabit];
       setHabits(newHabits);
       saveHabits(newHabits);
     }
+  };
+
+  const handleEditClick = (habit: Habit) => {
+    setEditingHabit(habit);
+    setIsAddModalOpen(true);
+  };
+
+  const handleDeleteHabit = (id: string) => {
+    // Confirmation handled in UI component
+    const newHabits = habits.filter(h => h.id !== id);
+    setHabits(newHabits);
+    saveHabits(newHabits);
   };
 
   const currentStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
@@ -409,7 +429,10 @@ export default function StreakQuestPage() {
                         </div>
                         <motion.div>
                           <Button 
-                              onClick={() => setIsAddModalOpen(true)}
+                              onClick={() => {
+                                setEditingHabit(null);
+                                setIsAddModalOpen(true);
+                              }}
                               className="flex items-center gap-2 bg-primary hover:bg-primary-glow text-background-dark px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] group"
                           >
                               <motion.div
@@ -460,6 +483,7 @@ export default function StreakQuestPage() {
                                         habit={habit} 
                                         onToggle={handleToggleHabit} 
                                         onDelete={handleDeleteHabit}
+                                        onEdit={handleEditClick}
                                         index={index}
                                         compact={habits.length > 2}
                                     />
@@ -485,8 +509,12 @@ export default function StreakQuestPage() {
 
       <AddHabitModal 
         isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)} 
-        onAdd={handleAddHabit} 
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingHabit(null);
+        }} 
+        onSave={handleSaveHabit}
+        initialData={editingHabit}
       />
     </div>
   );

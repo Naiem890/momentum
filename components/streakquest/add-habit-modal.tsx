@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HabitCategory } from '@/lib/types';
+import { HabitCategory, Habit } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
   Dialog,
@@ -12,12 +12,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Brain, Activity, Briefcase, Zap, Sparkles } from 'lucide-react';
+import { Brain, Activity, Briefcase, Zap, Sparkles, Pencil } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface AddHabitModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (title: string, category: HabitCategory) => void;
+  onSave: (title: string, category: HabitCategory) => void;
+  initialData?: Habit | null;
 }
 
 const categories = [
@@ -48,16 +50,30 @@ const itemVariants = {
   }
 };
 
-export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
+export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabitModalProps) {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<HabitCategory>('health');
+  
+  const isEditing = !!initialData;
+
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setCategory(initialData.category);
+    } else {
+      setTitle('');
+      setCategory('health');
+    }
+  }, [initialData, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      onAdd(title, category);
-      setTitle('');
-      setCategory('health');
+      onSave(title, category);
+      if (!isEditing) {
+        setTitle('');
+        setCategory('health');
+      }
       onClose();
     }
   };
@@ -76,9 +92,9 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Sparkles className="w-5 h-5 text-primary" />
+                {isEditing ? <Pencil className="w-5 h-5 text-primary" /> : <Sparkles className="w-5 h-5 text-primary" />}
               </motion.div>
-              New Quest
+              {isEditing ? 'Edit Quest' : 'New Quest'}
             </DialogTitle>
           </DialogHeader>
 
@@ -198,8 +214,8 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Sparkles className="w-4 h-4 group-hover:animate-pulse" />
-                  Start Quest
+                  {isEditing ? <Pencil className="w-4 h-4" /> : <Sparkles className="w-4 h-4 group-hover:animate-pulse" />}
+                  {isEditing ? 'Update Quest' : 'Start Quest'}
                 </motion.span>
                 
                 {/* Shine effect */}
