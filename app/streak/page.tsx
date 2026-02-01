@@ -95,9 +95,21 @@ export default function StreakQuestPage() {
 
 
     setHabits(updatedHabits);
-    setStats(loadedStats);
+    
+    // Recalculate stats based on active habits to fix any corrupted/mock data
+    const realTotalCompletions = updatedHabits.reduce((acc, h) => acc + h.completedDates.length, 0);
+    const realLongestStreak = Math.max(0, ...updatedHabits.map(h => h.streak), loadedStats.longestStreak > 100 ? 0 : loadedStats.longestStreak);
+    
+    const correctedStats = {
+      ...loadedStats,
+      totalHabitsCompleted: realTotalCompletions,
+      longestStreak: realLongestStreak
+    };
+
+    setStats(correctedStats);
     setPreviousStreak(Math.max(0, ...updatedHabits.map(h => h.streak)));
     saveHabits(updatedHabits); 
+    saveUserStats(correctedStats); 
   }, []);
 
   // --- Habit Logic ---
@@ -173,8 +185,8 @@ export default function StreakQuestPage() {
     }
   };
 
-  // const currentStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
-  const currentStreak = 365; // MOCK FOR DEMO
+  const currentStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
+  // const currentStreak = 365; // MOCK FOR DEMO
 
   if (!mounted) {
     return (

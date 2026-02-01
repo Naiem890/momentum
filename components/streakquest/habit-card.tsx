@@ -25,6 +25,10 @@ interface HabitCardProps {
   compact?: boolean;
 }
 
+import { Card } from '@/components/ui/card';
+
+// ... interface ...
+
 export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = false }: HabitCardProps) {
   const today = new Date().toISOString().split('T')[0];
   const isCompleted = habit.completedDates.includes(today);
@@ -70,138 +74,146 @@ export function HabitCard({ habit, onToggle, onDelete, index = 0, compact = fals
         delay: index * 0.05
       }}
       whileHover={{ 
-        y: compact ? -1 : -2,
-        transition: { duration: 0.2 }
+         y: compact ? -1 : -2,
+         transition: { duration: 0.2 }
       }}
       whileTap={{ scale: 0.98 }}
       onClick={handleToggle}
       className={cn(
-        "relative group cursor-pointer rounded-2xl transition-all duration-300 select-none overflow-hidden border",
-        compact 
-          ? "flex items-center gap-4 p-3 h-[72px]" 
-          : "flex flex-col justify-between p-6 h-[160px]",
-        isCompleted 
-          ? "bg-surface-dark-lighter border-primary/40 shadow-[0_0_20px_rgba(16,185,129,0.15)]" 
-          : "bg-surface-dark-lighter border-transparent hover:border-surface-border"
+        "group cursor-pointer relative",
+        compact ? "h-[72px]" : "h-[160px]"
       )}
     >
-      {/* Pulse effect */}
-      <PulseRing active={showPulse} />
-      
-      {/* XP Pop */}
-      <XpPop amount={habit.xpValue} show={showXp} />
-
-      {/* Completion Glow */}
-      <AnimatePresence>
-        {isCompleted && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"
-          />
+      <Card
+        className={cn(
+          "relative transition-all duration-300 select-none overflow-hidden rounded-2xl w-full h-full",
+          "border-0 ring-0 shadow-none gap-0 text-base py-0", // Reset Shadcn Card defaults
+          compact 
+            ? "flex flex-row items-center gap-4 p-3" 
+            : "flex flex-col justify-between p-6",
+          isCompleted 
+            ? "bg-surface-dark-lighter border border-primary/40 shadow-[0_0_20px_rgba(16,185,129,0.15)]" 
+            : "bg-surface-dark-lighter border border-transparent hover:border-surface-border"
         )}
-      </AnimatePresence>
+      >
+        {/* Pulse effect */}
+        <PulseRing active={showPulse} />
+        
+        {/* XP Pop */}
+        <XpPop amount={habit.xpValue} show={showXp} />
 
-      {/* Content */}
-      <div className={cn("z-10 flex", compact ? "order-1 items-center" : "order-1 w-full justify-between items-start")}>
-        <motion.div 
-          className={cn(
-            "rounded-xl flex items-center justify-center transition-colors duration-300",
-            compact ? "w-10 h-10 shrink-0" : "w-10 h-10",
-            isCompleted ? "bg-primary text-background-dark" : "bg-surface-dark text-gray-500 group-hover:text-white"
-          )}
-          animate={isCompleted ? {
-            rotate: [0, -10, 10, -5, 5, 0],
-          } : {}}
-          transition={{ duration: 0.5 }}
-        >
-           {getIcon(habit.category, habit.title)}
-        </motion.div>
-
-        {!compact && (
-          <motion.div
-            whileHover={{ opacity: 0.8 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Switch 
-              checked={isCompleted} 
-              onCheckedChange={handleToggle}
-              onClick={(e) => e.stopPropagation()}
+        {/* Completion Glow */}
+        <AnimatePresence>
+          {isCompleted && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"
             />
+          )}
+        </AnimatePresence>
+
+        {/* Content Top Row */}
+        <div className={cn("z-10 flex", compact ? "order-1 items-center" : "order-1 w-full justify-between items-start")}>
+          <motion.div 
+            className={cn(
+              "rounded-xl flex items-center justify-center transition-colors duration-300",
+              compact ? "w-10 h-10 shrink-0" : "w-10 h-10",
+              isCompleted ? "bg-primary text-background-dark" : "bg-surface-dark text-gray-500 group-hover:text-white"
+            )}
+            animate={isCompleted ? {
+              rotate: [0, -10, 10, -5, 5, 0],
+            } : {}}
+            transition={{ duration: 0.5 }}
+          >
+             {getIcon(habit.category, habit.title)}
           </motion.div>
-        )}
-      </div>
 
-      <div className={cn("z-10", compact ? "flex-1 order-2 flex items-center justify-between" : "order-2 mt-auto w-full")}>
-        <div className={cn(compact ? "flex items-center gap-3" : "block")}>
-           <motion.h3 
-             className={cn("font-bold transition-colors", compact ? "text-sm mb-0" : "text-base mb-1", isCompleted ? "text-white" : "text-gray-300")}
-             animate={isCompleted ? { x: [0, 2, -2, 1, 0] } : {}}
-             transition={{ duration: 0.3 }}
-           >
-             {habit.title}
-           </motion.h3>
-           
-           {!compact && (
-             <div className="flex items-center justify-between">
-                <p className="text-xs font-mono text-gray-500">
-                  {habit.description || (habit.category === 'work' ? '2 Pomodoro Sessions' : 'Daily Goal')}
-                </p>
-                {/* Streak moved to sidebar in compact */}
-             </div>
-           )}
+          {!compact && (
+            <motion.div
+              whileHover={{ opacity: 0.8 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Switch 
+                checked={isCompleted} 
+                onCheckedChange={handleToggle}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </motion.div>
+          )}
         </div>
 
-        {/* Right side in compact mode: Streak + Switch */}
-        <div className={cn(compact ? "flex items-center gap-4" : "absolute bottom-6 right-6")}>
-          <AnimatePresence>
-             {habit.streak > 0 && (
-               <motion.div 
-                 initial={{ opacity: 0, scale: 0 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 exit={{ opacity: 0, scale: 0 }}
-                 className="flex items-center gap-1 text-[10px] text-primary font-bold"
-               >
-                   <motion.div
-                     animate={{ 
-                       y: [0, -2, 0],
-                       rotate: [0, -5, 5, 0]
-                     }}
-                     transition={{ 
-                       duration: 1.5,
-                       repeat: Infinity,
-                       ease: "easeInOut"
-                     }}
-                   >
-                     <Flame className="w-3 h-3 fill-primary/50" />
-                   </motion.div>
-                   <motion.span
-                     key={habit.streak}
-                     initial={{ scale: 1.5, opacity: 0 }}
-                     animate={{ scale: 1, opacity: 1 }}
-                     transition={{ type: "spring", stiffness: 500 }}
-                   >
-                     {habit.streak}
-                   </motion.span>
-               </motion.div>
+        {/* Content Bottom Row */}
+        <div className={cn("z-10", compact ? "flex-1 order-2 flex items-center justify-between" : "order-2 mt-auto w-full")}>
+          <div className={cn(compact ? "flex items-center gap-3" : "block")}>
+             <motion.h3 
+               className={cn("font-bold transition-colors", compact ? "text-sm mb-0" : "text-base mb-1", isCompleted ? "text-white" : "text-gray-300")}
+               animate={isCompleted ? { x: [0, 2, -2, 1, 0] } : {}}
+               transition={{ duration: 0.3 }}
+             >
+               {habit.title}
+             </motion.h3>
+             
+             {!compact && (
+               <div className="flex items-center justify-between">
+                  <p className="text-xs font-mono text-gray-500">
+                    {habit.description || (habit.category === 'work' ? '2 Pomodoro Sessions' : 'Daily Goal')}
+                  </p>
+               </div>
              )}
-           </AnimatePresence>
+          </div>
 
-           {compact && (
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Switch 
-                  checked={isCompleted} 
-                  onCheckedChange={handleToggle}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </motion.div>
-           )}
+          {/* Right side in compact mode OR Streak (Absolute) in Normal Mode */}
+          <div className={cn(compact ? "flex items-center gap-4" : "absolute bottom-6 right-6")}>
+            <AnimatePresence>
+               {habit.streak > 0 && (
+                 <motion.div 
+                   initial={{ opacity: 0, scale: 0 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   exit={{ opacity: 0, scale: 0 }}
+                   className="flex items-center gap-1 text-[10px] text-primary font-bold"
+                 >
+                     <motion.div
+                       animate={{ 
+                         y: [0, -2, 0],
+                         rotate: [0, -5, 5, 0]
+                       }}
+                       transition={{ 
+                         duration: 1.5,
+                         repeat: Infinity,
+                         ease: "easeInOut"
+                       }}
+                     >
+                       <Flame className="w-3 h-3 fill-primary/50" />
+                     </motion.div>
+                     <motion.span
+                       key={habit.streak}
+                       initial={{ scale: 1.5, opacity: 0 }}
+                       animate={{ scale: 1, opacity: 1 }}
+                       transition={{ type: "spring", stiffness: 500 }}
+                     >
+                       {habit.streak}
+                     </motion.span>
+                 </motion.div>
+               )}
+             </AnimatePresence>
+
+             {compact && (
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Switch 
+                    checked={isCompleted} 
+                    onCheckedChange={handleToggle}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </motion.div>
+             )}
+          </div>
         </div>
-      </div>
+      </Card>
     </motion.div>
   );
 }

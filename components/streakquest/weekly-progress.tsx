@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { Habit } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
 interface WeeklyProgressProps {
   habits: Habit[];
   compact?: boolean;
@@ -35,36 +38,31 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-      className={cn("bg-surface-dark rounded-3xl shadow-sm", compact ? "p-6" : "p-8")}
     >
-        {/* Header - Hidden in compact mode if desired, or simplified */}
+      <Card className={cn("bg-surface-dark border-none shadow-sm rounded-3xl", compact ? "p-0" : "p-0")}>
         {!compact && (
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex justify-between items-center mb-8"
-          >
-              <h3 className="font-semibold text-lg text-white">Weekly Progress</h3>
-              <motion.span 
-                className="text-xs font-mono font-bold text-primary uppercase tracking-wider"
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                Last 7 Days
-              </motion.span>
-          </motion.div>
+          <CardHeader className="flex-row items-center justify-between p-8 pb-0">
+              <CardTitle className="font-semibold text-lg text-white">Weekly Progress</CardTitle>
+              <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary text-xs font-mono font-bold uppercase tracking-wider">
+                <motion.span 
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  Last 7 Days
+                </motion.span>
+              </Badge>
+          </CardHeader>
         )}
 
         {compact && (
-             <div className="flex justify-between items-center mb-3">
+             <div className="flex justify-between items-center mb-3 p-6 pb-0">
                <h3 className="font-bold text-sm text-gray-400 uppercase tracking-widest font-mono">Last 7 Days</h3>
                <div className="h-[1px] flex-1 bg-surface-border ml-4 opacity-50" />
              </div>
         )}
 
         {/* Timeline */}
-        <div className={cn("relative", compact ? "pt-1 pb-1" : "pt-2 pb-4")}>
+        <CardContent className={cn("relative", compact ? "p-6 pt-1 pb-1" : "p-8 pt-2 pb-8")}>
             {/* Background Line */}
             <motion.div 
               initial={{ scaleX: 0 }}
@@ -166,7 +164,8 @@ export function WeeklyProgress({ habits, compact = false }: WeeklyProgressProps)
                     );
                 })}
             </div>
-        </div>
+        </CardContent>
+      </Card>
     </motion.div>
   );
 }

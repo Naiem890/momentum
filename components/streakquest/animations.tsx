@@ -81,8 +81,6 @@ export function StreakFire({ streak }: { streak: number }) {
     <motion.div
       className="relative"
       initial={{ scale: 1 }}
-      className="relative"
-      initial={{ scale: 1 }}
       animate={{ scale: 1 }}
     >
       {/* Glow effect */}
