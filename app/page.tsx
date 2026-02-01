@@ -354,7 +354,7 @@ export default function MomentumDashboard() {
   }
   
   return (
-    <div className="h-screen bg-background-dark text-gray-300 flex flex-col overflow-hidden p-4 md:p-6 transition-colors duration-300">
+    <div className="min-h-screen bg-background-dark text-gray-300 p-4 md:p-6 transition-colors duration-300">
       
       {/* Celebration Confetti */}
       <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
@@ -364,7 +364,7 @@ export default function MomentumDashboard() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="max-w-[1400px] w-full mx-auto flex justify-between items-center mb-6 font-mono text-sm tracking-wider shrink-0"
+        className="max-w-[1400px] w-full mx-auto flex justify-between items-center mb-6 font-mono text-sm tracking-wider"
       >
         <motion.div 
           className="text-gray-400 font-semibold flex items-center gap-2"
@@ -393,7 +393,7 @@ export default function MomentumDashboard() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="relative overflow-hidden rounded-3xl p-4 flex items-center justify-center shadow-lg shrink-0 group max-w-[1400px] w-full mx-auto mb-6"
+        className="relative overflow-hidden rounded-3xl p-4 flex items-center justify-center shadow-lg group max-w-[1400px] w-full mx-auto mb-6"
       >
           {/* Background Gradient & Effects */}
           <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-surface-dark to-surface-dark border border-primary/20 transition-all duration-500 group-hover:border-primary/40 rounded-3xl" />
@@ -454,10 +454,10 @@ export default function MomentumDashboard() {
       </motion.div>
 
       {/* Main Grid */}
-      <div className="flex-1 min-h-0 w-full max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+      <div className="w-full max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             
             {/* Left Column (Span 4) */}
-            <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-hidden">
+            <div className="lg:col-span-4 flex flex-col gap-6">
                 {/* Streak Widget */}
                 <StreakCard streak={currentStreak} />
 
@@ -466,9 +466,8 @@ export default function MomentumDashboard() {
                    <WeeklyProgress habits={habits} compact />
                 </div>
 
-                {/* Milestones - Fills remaining height */}
+                {/* Milestones - Fills available space but allows partial content */}
                 <motion.div 
-                  className="flex-1 min-h-0"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
@@ -478,14 +477,14 @@ export default function MomentumDashboard() {
             </div>
 
             {/* Right Column (Span 8) */}
-            <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-hidden">
+            <div className="lg:col-span-8 flex flex-col gap-6">
                 
                 {/* Active Tasks */}
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-surface-dark rounded-3xl p-6 flex-1 shadow-xl border border-white/5 flex flex-col min-h-0 overflow-hidden"
+                  className="bg-surface-dark rounded-3xl p-6 shadow-xl border border-white/5 flex flex-col h-full"
                 >
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
@@ -570,7 +569,7 @@ export default function MomentumDashboard() {
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 -mr-2">
+                    <div className="pr-2 -mr-2">
                         <AnimatePresence mode="wait">
                       {(() => {
                         // Handle completed filter separately
@@ -581,7 +580,7 @@ export default function MomentumDashboard() {
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               exit={{ opacity: 0 }}
-                              className="flex-1 border border-dashed border-surface-border rounded-2xl flex flex-col items-center justify-center p-12 group hover:border-primary/30 transition-colors"
+                              className="border border-dashed border-surface-border rounded-2xl flex flex-col items-center justify-center p-12 group hover:border-primary/30 transition-colors"
                             >
                                 <motion.div
                                   animate={{ rotate: [0, 5, -5, 0] }}
@@ -659,7 +658,7 @@ export default function MomentumDashboard() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="flex-1 border border-dashed border-surface-border rounded-2xl flex flex-col items-center justify-center p-12 group hover:border-primary/30 transition-colors"
+                            className="border border-dashed border-surface-border rounded-2xl flex flex-col items-center justify-center p-12 group hover:border-primary/30 transition-colors"
                           >
                               <motion.div
                                 animate={{ 
