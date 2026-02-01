@@ -54,6 +54,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileNavigation } from '@/components/streakquest/mobile-navigation';
 import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
 import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
+import { MobileAddTaskDrawer } from '@/components/streakquest/mobile-add-task-drawer';
 
 export default function MomentumDashboard() {
   // --- Theme ---
@@ -439,8 +440,8 @@ export default function MomentumDashboard() {
           onTabChange={setMobileTab}
         />
 
-        {/* Add/Edit Modal */}
-        <AddHabitModal 
+        {/* Add/Edit Drawer - Mobile Native */}
+        <MobileAddTaskDrawer 
           isOpen={isAddModalOpen} 
           onClose={() => {
             setIsAddModalOpen(false);
