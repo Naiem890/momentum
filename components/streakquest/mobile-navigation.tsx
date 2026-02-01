@@ -29,7 +29,7 @@ export function MobileNavigation({ activeTab, onTabChange }: MobileNavigationPro
       {/* Subtle glow at top */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       
-      <div className="relative flex items-stretch h-20 max-w-lg mx-auto">
+      <div className="relative flex items-stretch h-18 max-w-lg mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -47,18 +47,18 @@ export function MobileNavigation({ activeTab, onTabChange }: MobileNavigationPro
               {isActive && (
                 <motion.div
                   layoutId="navPill"
-                  className="absolute inset-x-4 top-2 bottom-2 bg-primary/15 rounded-2xl border border-primary/20"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="absolute inset-x-4 top-2 bottom-2 rounded-2xl"
+                  // transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               
               <motion.div
                 className="relative z-10 flex flex-col items-center gap-1"
-                animate={{ 
-                  y: isActive ? -2 : 0,
-                  scale: isActive ? 1.05 : 1
-                }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                // animate={{ 
+                //   y: isActive ? -2 : 0,
+                //   scale: isActive ? 1.05 : 1
+                // }}
+                // transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 {/* Icon with glow effect when active */}
                 <div className="relative">
