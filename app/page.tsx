@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   getHabits, 
@@ -55,9 +56,12 @@ import { MobileNavigation } from '@/components/streakquest/mobile-navigation';
 import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
 import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
 import { MobileAddTaskDrawer } from '@/components/streakquest/mobile-add-task-drawer';
-import { AuthButton } from '@/components/auth';
+import { AuthButton, LoginScreen } from '@/components/auth';
 
 export default function MomentumDashboard() {
+  // --- Auth ---
+  const { data: session, status } = useSession();
+  
   // --- Theme ---
   const { theme, toggleTheme } = useTheme();
   
@@ -348,6 +352,26 @@ export default function MomentumDashboard() {
   // Current streak is based on streakable habits only
   const currentStreak = streakableTasks.length > 0 ? Math.max(...streakableTasks.map(h => h.streak)) : 0;
   // const currentStreak = 100; // MOCK FOR DEMO
+
+  // --- Auth Loading State ---
+  if (status === 'loading') {
+    return (
+      <div className="h-screen bg-background-dark flex items-center justify-center">
+        <motion.div 
+          className="text-primary"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <Flame className="w-12 h-12" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  // --- Not Authenticated ---
+  if (!session) {
+    return <LoginScreen />;
+  }
 
   if (!mounted) {
     return (
