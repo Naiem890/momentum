@@ -1,16 +1,27 @@
-'use client';
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { AnimatedCounter } from './animations';
+import { WaterFillStreak } from './water-fill-streak';
 
 interface StreakCardProps {
   streak: number;
   className?: string;
+  dailyGoal?: number;
+  completedDaily?: number;
 }
 
-export function StreakCard({ streak, className }: StreakCardProps) {
+export function StreakCard({ streak, className, dailyGoal = 0, completedDaily = 0 }: StreakCardProps) {
+  // Calculate progress for the water fill
+  // Prevent division by zero
+  const progress = dailyGoal > 0 ? Math.min(Math.max(completedDaily / dailyGoal, 0), 1) : 0;
+  
+  // Check if we should show the water fill animation
+  // Show if there is a goal, and we have some progress but haven't finished yet
+  // OR if we start at 0, we show 0 fill.
+  // We switch back to white ONLY when progress is 1 (100%).
+  const showWaterFill = dailyGoal > 0 && progress < 1;
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -73,15 +84,23 @@ export function StreakCard({ streak, className }: StreakCardProps) {
         </div>
 
         {/* Center Section: Big Number */}
-        <div className="relative z-10 flex-1 flex items-center justify-center -mt-2">
-            <motion.h1 
-              className="text-[6rem] leading-none font-bold font-mono tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50 drop-shadow-2xl"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-            >
-                <AnimatedCounter value={streak} />
-            </motion.h1>
+        <div className="relative z-10 flex-1 flex items-center justify-center -mt-2 w-full">
+            {showWaterFill ? (
+               <div className="w-full max-w-[200px] h-[120px] flex items-center justify-center">
+                  <WaterFillStreak value={streak} progress={progress} className="w-full h-full" />
+               </div>
+            ) : (
+              <motion.h1 
+                className="text-[6rem] leading-none font-bold font-mono tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/50 drop-shadow-2xl"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                // Key forces re-animation when switching from water fill back to static
+                key="static-text"
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
+                  <AnimatedCounter value={streak} />
+              </motion.h1>
+            )}
         </div>
 
         {/* Bottom Section: Status Text */}
@@ -94,7 +113,9 @@ export function StreakCard({ streak, className }: StreakCardProps) {
             >
               <div className="h-px w-6 bg-gradient-to-r from-primary to-transparent" />
               <span className="text-gray-400 font-mono text-[10px] tracking-wider uppercase">
-                  Keep the momentum
+                  {dailyGoal > 0 && progress < 1 
+                    ? `${completedDaily}/${dailyGoal} Daily Goals`
+                    : "Keep the momentum"}
               </span>
             </motion.div>
         </div>

@@ -413,7 +413,40 @@ export default function MomentumDashboard() {
             {/* Left Column (Span 4) */}
             <div className="lg:col-span-4 flex flex-col gap-6">
                 {/* Streak Widget */}
-                <StreakCard streak={currentStreak} />
+                <StreakCard 
+                  streak={
+                     // Visual Logic: If we have made progress today but NOT finished, 
+                     // show the "base" streak (current - 1, assuming current incremented on first task).
+                     // However, the user said "3/3 done -> change to 34".
+                     // And "30 will have 1/3 green".
+                     // This implies 30 is the STARTING streak for the day.
+                     // The current codebase updates currentStreak dynamically based on max(habit.streak).
+                     // If I have 3 habits, all streak 30.
+                     // I do 1. Its streak becomes 31. max(habit.streak) = 31.
+                     // Dashboard shows 31.
+                     // BUT user wants 30... filling up.
+                     // So if not ALL daily tasks are done, show currentStreak - 1 (if any are done).
+                     // Wait, if 0 are done, max is 30. Show 30.
+                     // If 1 is done, max is 31. Show 30 (filled 1/3).
+                     // If 3 are done, max is 31. Show 31 (filled 100% -> reset to white).
+                     
+                     (streakableTasks.length > 0 && 
+                      streakableTasks.some(h => {
+                         const today = new Date().toISOString().split('T')[0];
+                         return h.completedDates.includes(today);
+                      }) && 
+                      !streakableTasks.every(h => {
+                         const today = new Date().toISOString().split('T')[0];
+                         return h.completedDates.includes(today);
+                      })
+                     ) ? currentStreak - 1 : currentStreak
+                  } 
+                  dailyGoal={streakableTasks.length}
+                  completedDaily={streakableTasks.filter(h => {
+                     const today = new Date().toISOString().split('T')[0];
+                     return h.completedDates.includes(today);
+                  }).length}
+                />
 
                 {/* Weekly Progress - Compact Mode */}
                 <div className="shrink-0">

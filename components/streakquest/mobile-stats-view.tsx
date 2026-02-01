@@ -103,7 +103,23 @@ export function MobileStatsView({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <StreakCard streak={currentStreak} className="h-[180px]" />
+        <StreakCard 
+          streak={
+             (habits.filter(h => h.isStreakable).length > 0 && 
+              habits.filter(h => h.isStreakable).some(h => {
+                 const today = new Date().toISOString().split('T')[0];
+                 return h.completedDates.includes(today);
+              }) && 
+              !habits.filter(h => h.isStreakable).every(h => {
+                 const today = new Date().toISOString().split('T')[0];
+                 return h.completedDates.includes(today);
+              })
+             ) ? currentStreak - 1 : currentStreak
+          } 
+          className="h-[180px]" 
+          dailyGoal={habits.filter(h => h.isStreakable).length}
+          completedDaily={habits.filter(h => h.isStreakable && h.completedDates.includes(new Date().toISOString().split('T')[0])).length}
+        />
       </motion.div>
 
       {/* Weekly Progress */}
