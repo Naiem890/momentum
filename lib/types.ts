@@ -8,6 +8,8 @@ export interface Habit {
   streak: number;
   completedDates: string[]; // ISO Date strings YYYY-MM-DD
   createdAt: number;
+  targetTime?: number; // Target time in minutes. 0 or undefined = simple habit
+  dailyProgress?: Record<string, number>; // Key: YYYY-MM-DD, Value: minutes spent
 }
 
 export interface UserStats {

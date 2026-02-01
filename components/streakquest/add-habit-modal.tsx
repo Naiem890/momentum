@@ -12,13 +12,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Brain, Activity, Briefcase, Zap, Sparkles, Pencil } from 'lucide-react';
+import { Brain, Activity, Briefcase, Zap, Sparkles, Pencil, Timer, CheckCircle } from 'lucide-react';
 import { useEffect } from 'react';
+import { Switch } from '@/components/ui/switch'; // Assuming existing or using Shadcn Switch
 
 interface AddHabitModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (title: string, category: HabitCategory) => void;
+  onSave: (title: string, category: HabitCategory, targetTime?: number) => void;
   initialData?: Habit | null;
 }
 
@@ -54,25 +55,46 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<HabitCategory>('health');
   
+  // Time Tracking State
+  const [isTimeBased, setIsTimeBased] = useState(false);
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(30);
+
   const isEditing = !!initialData;
 
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
       setCategory(initialData.category);
+      if (initialData.targetTime && initialData.targetTime > 0) {
+        setIsTimeBased(true);
+        setHours(Math.floor(initialData.targetTime / 60));
+        setMinutes(initialData.targetTime % 60);
+      } else {
+        setIsTimeBased(false);
+        setHours(0);
+        setMinutes(30);
+      }
     } else {
       setTitle('');
       setCategory('health');
+      setIsTimeBased(false);
+      setHours(0);
+      setMinutes(30);
     }
   }, [initialData, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      onSave(title, category);
+      const targetTime = isTimeBased ? (hours * 60) + minutes : 0;
+      onSave(title, category, targetTime);
       if (!isEditing) {
         setTitle('');
         setCategory('health');
+        setIsTimeBased(false);
+        setHours(0);
+        setMinutes(30);
       }
       onClose();
     }
@@ -94,7 +116,7 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
               >
                 {isEditing ? <Pencil className="w-5 h-5 text-primary" /> : <Sparkles className="w-5 h-5 text-primary" />}
               </motion.div>
-              {isEditing ? 'Edit Quest' : 'New Quest'}
+              {isEditing ? 'Edit Protocol' : 'New Protocol'}
             </DialogTitle>
           </DialogHeader>
 
@@ -104,14 +126,14 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <label className="block text-sm font-medium text-text-muted mb-2">Quest Title</label>
+              <label className="block text-sm font-medium text-text-muted mb-2">Protocol Name</label>
               <motion.div whileFocus={{ scale: 1.01 }}>
                 <Input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., Read 10 pages"
-                  className="bg-background-dark border-surface-border text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-primary/50 transition-all"
+                  placeholder="e.g., Deep Work Session"
+                  className="bg-background-dark border-surface-border text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-primary/50 transition-all font-mono"
                   autoFocus
                 />
               </motion.div>
@@ -199,6 +221,82 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
               </div>
             </motion.div>
 
+            {/* Goal Type Section */}
+            <motion.div
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 transition={{ delay: 0.3 }}
+                 className="space-y-4"
+            >
+                <label className="block text-sm font-medium text-text-muted">Goal Type</label>
+                <div className="flex gap-4 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border">
+                    <button
+                        type="button"
+                        onClick={() => setIsTimeBased(false)}
+                        className={cn(
+                            "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all",
+                            !isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                        )}
+                    >
+                        <CheckCircle className="w-4 h-4" />
+                        Check-off
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsTimeBased(true)}
+                        className={cn(
+                            "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all",
+                            isTimeBased ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-400 hover:text-white"
+                        )}
+                    >
+                        <Timer className="w-4 h-4" />
+                        Time-based
+                    </button>
+                </div>
+
+                {/* Time Input */}
+                <AnimatePresence>
+                    {isTimeBased && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                        >
+                            <div className="flex gap-4 items-end bg-[#1A1A1A] p-4 rounded-xl border border-surface-border/50">
+                                <div className="flex-1">
+                                    <label className="text-xs text-gray-500 mb-1 block">Hours</label>
+                                    <Input 
+                                        type="number" 
+                                        min="0" 
+                                        max="23"
+                                        value={hours}
+                                        onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                                        className="bg-transparent border-surface-border text-white text-center font-mono text-lg" 
+                                    />
+                                </div>
+                                <span className="text-gray-500 mb-2 font-bold">:</span>
+                                <div className="flex-1">
+                                    <label className="text-xs text-gray-500 mb-1 block">Minutes</label>
+                                    <Input 
+                                        type="number" 
+                                        min="0" 
+                                        max="59" 
+                                        value={minutes}
+                                        onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                                        className="bg-transparent border-surface-border text-white text-center font-mono text-lg" 
+                                    />
+                                </div>
+                                <div className="flex items-center justify-center h-10 px-2 text-primary font-mono text-xs font-bold border border-primary/20 rounded bg-primary/5">
+                                    {hours}h {minutes}m / day
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </motion.div>
+
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -215,7 +313,7 @@ export function AddHabitModal({ isOpen, onClose, onSave, initialData }: AddHabit
                   whileTap={{ scale: 0.98 }}
                 >
                   {isEditing ? <Pencil className="w-4 h-4" /> : <Sparkles className="w-4 h-4 group-hover:animate-pulse" />}
-                  {isEditing ? 'Update Quest' : 'Start Quest'}
+                  {isEditing ? 'Update Protocol' : 'Initialize Protocol'}
                 </motion.span>
                 
                 {/* Shine effect */}

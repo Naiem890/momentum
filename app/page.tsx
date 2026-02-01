@@ -115,6 +115,18 @@ export default function MomentumDashboard() {
   const handleToggleHabit = useCallback((id: string) => {
     const today = new Date().toISOString().split('T')[0];
     setHabits(prevHabits => {
+      const habit = prevHabits.find(h => h.id === id);
+      if (!habit) return prevHabits;
+      
+      // Prevent manual toggle for time-based habits (optional, or allow override)
+      if (habit.targetTime && habit.targetTime > 0) {
+        // For now, we'll let clicking the checkmark behave as "Complete Now" (set time to target) ??
+        // OR better: Clicking checkmark on time-based habit is disabled or opens manual entry.
+        // Let's assume for now we keep it binary toggle behavior acts as an override or just disable it.
+        // User requested: "minimum timer habits wont be completed with click only"
+        return prevHabits; 
+      }
+
       const newHabits = prevHabits.map(h => {
         if (h.id !== id) return h;
         const isCompletedToday = h.completedDates.includes(today);
@@ -128,7 +140,6 @@ export default function MomentumDashboard() {
           newStreak += 1;
           newCompletedDates.push(today);
           
-          // Trigger celebration on milestone streaks
           if (newStreak === 7 || newStreak === 30 || newStreak === 60 || newStreak === 100) {
             setShowCelebration(true);
           }
@@ -136,7 +147,6 @@ export default function MomentumDashboard() {
         return { ...h, streak: newStreak, completedDates: newCompletedDates };
       });
       
-      // Check if max streak increased
       const newMaxStreak = Math.max(0, ...newHabits.map(h => h.streak));
       if (newMaxStreak > previousStreak) {
         setPreviousStreak(newMaxStreak);
@@ -146,28 +156,72 @@ export default function MomentumDashboard() {
       return newHabits;
     });
     
-    // Update stats
+    // Update stats (Binary toggle)
     const today2 = new Date().toISOString().split('T')[0];
     const habit = habits.find(h => h.id === id);
-    if (habit) {
-      const isCompletedToday = habit.completedDates.includes(today2);
-      setStats(prev => {
-        const newCompletedTotal = !isCompletedToday ? prev.totalHabitsCompleted + 1 : Math.max(0, prev.totalHabitsCompleted - 1);
-        const currentMaxStreak = Math.max(prev.longestStreak, ...habits.map(h => h.streak));
-        const newStats = { ...prev, totalHabitsCompleted: newCompletedTotal, longestStreak: currentMaxStreak };
-        saveUserStats(newStats);
-        return newStats;
-      });
+    if (habit && (!habit.targetTime || habit.targetTime === 0)) {
+       const isCompletedToday = habit.completedDates.includes(today2);
+       setStats(prev => {
+         const newCompletedTotal = !isCompletedToday ? prev.totalHabitsCompleted + 1 : Math.max(0, prev.totalHabitsCompleted - 1);
+         const currentMaxStreak = Math.max(prev.longestStreak, ...habits.map(h => h.streak));
+         const newStats = { ...prev, totalHabitsCompleted: newCompletedTotal, longestStreak: currentMaxStreak };
+         saveUserStats(newStats);
+         return newStats;
+       });
     }
   }, [habits, previousStreak]);
 
-  const handleSaveHabit = (title: string, category: HabitCategory) => {
+  const handleUpdateProgress = useCallback((id: string, minutes: number) => {
+      const today = new Date().toISOString().split('T')[0];
+      setHabits(prevHabits => {
+          const newHabits = prevHabits.map(h => {
+              if (h.id !== id) return h;
+              
+              const currentProgress = h.dailyProgress?.[today] || 0;
+              const newProgress = Math.min(24 * 60, Math.max(0, minutes)); // Clamp between 0 and 24h
+              
+              const updatedDailyProgress = { ...h.dailyProgress, [today]: newProgress };
+              
+              // Check completion status
+              const target = h.targetTime || 0;
+              const wasCompleted = h.completedDates.includes(today);
+              const isNowCompleted = target > 0 && newProgress >= target;
+              
+              let newCompletedDates = [...h.completedDates];
+              let newStreak = h.streak;
+              
+              if (isNowCompleted && !wasCompleted) {
+                  // Just completed
+                  newCompletedDates.push(today);
+                  newStreak += 1;
+                  // Celebration check
+                  if (newStreak % 7 === 0 || newStreak === 30 || newStreak === 100) setShowCelebration(true);
+              } else if (!isNowCompleted && wasCompleted) {
+                  // Just un-completed (reduced time below target)
+                  newCompletedDates = newCompletedDates.filter(d => d !== today);
+                  newStreak = Math.max(0, h.streak - 1); 
+              }
+              
+              return { 
+                  ...h, 
+                  dailyProgress: updatedDailyProgress,
+                  completedDates: newCompletedDates,
+                  streak: newStreak
+              };
+          });
+
+          saveHabits(newHabits);
+          return newHabits;
+      });
+  }, []);
+
+  const handleSaveHabit = (title: string, category: HabitCategory, targetTime?: number) => {
     if (editingHabit) {
       // Update existing
       setHabits(prev => {
         const newHabits = prev.map(h => 
           h.id === editingHabit.id 
-            ? { ...h, title, category } 
+            ? { ...h, title, category, targetTime: targetTime || 0 } 
             : h
         );
         saveHabits(newHabits);
@@ -182,7 +236,9 @@ export default function MomentumDashboard() {
         category,
         streak: 0,
         completedDates: [],
-        createdAt: Date.now() 
+        createdAt: Date.now(),
+        targetTime: targetTime || 0,
+        dailyProgress: {}
       };
       const newHabits = [...habits, newHabit];
       setHabits(newHabits);
@@ -469,14 +525,14 @@ export default function MomentumDashboard() {
                               <p className="text-sm text-gray-600">Initialize your first protocol to begin.</p>
                           </motion.div>
                       ) : (
-                          <motion.div 
-                            key="grid"
-                            className={cn("grid gap-4", habits.length > 2 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}
+                      <motion.div 
+                            key="list"
+                            className="flex flex-col gap-3"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                           >
-                              <AnimatePresence>
+                              <AnimatePresence mode="popLayout">
                                 {habits.map((habit, index) => (
                                     <HabitCard 
                                         key={habit.id} 
@@ -484,8 +540,8 @@ export default function MomentumDashboard() {
                                         onToggle={handleToggleHabit} 
                                         onDelete={handleDeleteHabit}
                                         onEdit={handleEditClick}
+                                        onProgress={handleUpdateProgress}
                                         index={index}
-                                        compact={habits.length > 2}
                                     />
                                 ))}
                               </AnimatePresence>
