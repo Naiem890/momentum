@@ -74,7 +74,7 @@ export function AuthButton() {
           </div>
         )}
         <span className="text-sm text-gray-300 font-medium hidden sm:block max-w-[120px] truncate">
-          {session.user?.name || session.user?.email}
+          {session.user?.name ? session.user.name.split(' ').pop() : session.user?.email}
         </span>
       </motion.button>
 
