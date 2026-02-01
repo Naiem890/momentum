@@ -523,11 +523,11 @@ export default function MomentumDashboard() {
                     </div>
 
                     {/* Filter Button Group */}
-                    <div className="flex gap-1 p-1 bg-surface-dark-lighter rounded-xl border border-surface-border mb-4">
+                    <div className="flex bg-surface-dark-lighter rounded-xl border border-surface-border mb-4 overflow-x-auto no-scrollbar p-1 gap-1">
                         <button
                             onClick={() => setTaskFilter('all')}
                             className={cn(
-                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap min-w-fit",
                                 taskFilter === 'all' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
                             )}
                         >
@@ -537,7 +537,7 @@ export default function MomentumDashboard() {
                         <button
                             onClick={() => setTaskFilter('daily')}
                             className={cn(
-                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap min-w-fit",
                                 taskFilter === 'daily' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
                             )}
                         >
@@ -548,7 +548,7 @@ export default function MomentumDashboard() {
                         <button
                             onClick={() => setTaskFilter('onetime')}
                             className={cn(
-                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap min-w-fit",
                                 taskFilter === 'onetime' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
                             )}
                         >
@@ -559,7 +559,7 @@ export default function MomentumDashboard() {
                         <button
                             onClick={() => setTaskFilter('completed')}
                             className={cn(
-                                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                                "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap min-w-fit",
                                 taskFilter === 'completed' ? "bg-[#2A2A2A] text-white shadow-sm" : "text-gray-500 hover:text-white"
                             )}
                         >

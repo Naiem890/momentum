@@ -119,41 +119,42 @@ export function Heatmap({ habits }: HeatmapProps) {
                </h3>
            </div>
 
-           <div className='flex items-center gap-4'>
+           <div className='flex items-center justify-between gap-4 w-full md:w-auto overflow-hidden'>
             {/* Filters */}
-           <div className="flex bg-surface-dark-lighter p-1 rounded-xl">
-               {filters.map((f) => (
-                   <Button
-                       key={f.id}
-                       variant= {filter === f.id ? "default" : "ghost"}
-                       size="sm"
-                       onClick={() => setFilter(f.id)}
-                       className={cn(
-                           "px-4 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
-                           filter === f.id 
-                               ? "bg-primary shadow-sm hover:bg-primary" 
-                               : "text-gray-400 hover:text-white hover:bg-transparent"
-                       )}
-                   >
-                       {f.label}
-                   </Button>
-               ))}
-           </div>
-                          {/* Year Navigation */}
-               <div className="flex items-center gap-2 bg-surface-dark-lighter rounded-lg p-1 ml-4 border border-surface-border">
-                   <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-white" onClick={() => setSelectedYear(y => y - 1)}>
-                       <ChevronLeft className="w-4 h-4" />
-                   </Button>
-                   <span className="text-sm font-mono font-bold text-white min-w-[40px] text-center">{selectedYear}</span>
-                   <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-white" onClick={() => setSelectedYear(y => y + 1)} disabled={selectedYear >= new Date().getFullYear()}>
-                       <ChevronRight className="w-4 h-4" />
-                   </Button>
-               </div>
+            <div className="flex overflow-x-auto bg-surface-dark-lighter p-1 rounded-xl no-scrollbar touch-pan-x shrink-0 max-w-[calc(100%-8rem)] md:max-w-none">
+                {filters.map((f) => (
+                    <Button
+                        key={f.id}
+                        variant= {filter === f.id ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setFilter(f.id)}
+                        className={cn(
+                            "px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap",
+                            filter === f.id 
+                                ? "bg-primary shadow-sm hover:bg-primary" 
+                                : "text-gray-400 hover:text-white hover:bg-transparent"
+                        )}
+                    >
+                        {f.label}
+                    </Button>
+                ))}
+            </div>
+            
+            {/* Year Navigation */}
+            <div className="flex items-center gap-2 bg-surface-dark-lighter rounded-lg p-1 border border-surface-border shrink-0 ml-auto md:ml-0">
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-white" onClick={() => setSelectedYear(y => y - 1)}>
+                    <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="text-sm font-mono font-bold text-white min-w-[40px] text-center">{selectedYear}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-white" onClick={() => setSelectedYear(y => y + 1)} disabled={selectedYear >= new Date().getFullYear()}>
+                    <ChevronRight className="w-4 h-4" />
+                </Button>
+            </div>
            </div>
        </div>
        
        {/* Graph Container */}
-       <div className="w-full overflow-x-auto custom-scrollbar">
+       <div className="w-full overflow-x-auto custom-scrollbar pb-2">
             <div className="min-w-[800px] flex gap-2">
                 {/* Y Axis Labels */}
                 <div className="flex flex-col justify-between py-[2px] pr-2 text-[10px] font-mono text-gray-600 h-[110px]">
