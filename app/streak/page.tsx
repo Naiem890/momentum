@@ -11,6 +11,7 @@ import {
   saveDailyQuote
 } from '@/lib/storage';
 import { Habit, UserStats, HabitCategory } from '@/lib/types';
+import { cn } from '@/lib/utils';
 import { fetchQuote, Quote as QuoteType, MOTIVATIONAL_QUOTES } from '@/lib/quotes';
 import { HabitCard } from '@/components/streakquest/habit-card';
 import { Heatmap } from '@/components/streakquest/heatmap';
@@ -92,6 +93,7 @@ export default function StreakQuestPage() {
       return h;
     });
 
+
     setHabits(updatedHabits);
     setStats(loadedStats);
     setPreviousStreak(Math.max(0, ...updatedHabits.map(h => h.streak)));
@@ -171,7 +173,8 @@ export default function StreakQuestPage() {
     }
   };
 
-  const currentStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
+  // const currentStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
+  const currentStreak = 365; // MOCK FOR DEMO
 
   if (!mounted) {
     return (
@@ -237,7 +240,7 @@ export default function StreakQuestPage() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 200, damping: 20 }}
                   whileHover={{ scale: 1.01 }}
-                  className="relative bg-surface-dark rounded-3xl p-8 flex flex-col justify-between h-[340px] shadow-sm overflow-hidden group shrink-0"
+                  className="relative bg-surface-dark rounded-3xl p-8 flex flex-col justify-between h-[280px] shadow-sm overflow-hidden group shrink-0"
                 >
                     {/* Animated top gradient line */}
                     <motion.div 
@@ -294,6 +297,11 @@ export default function StreakQuestPage() {
                     </div>
                 </motion.div>
 
+                {/* Weekly Progress - Compact Mode */}
+                <div className="shrink-0">
+                   <WeeklyProgress habits={habits} compact />
+                </div>
+
                 {/* Milestones - Fills remaining height */}
                 <motion.div 
                   className="flex-1 min-h-0"
@@ -301,14 +309,13 @@ export default function StreakQuestPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                   <Milestones stats={stats} habits={habits} />
+                   <Milestones stats={stats} habits={habits} currentStreak={currentStreak} />
                 </motion.div>
             </div>
 
             {/* Right Column (Span 8) */}
-            <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-y-auto custom-scrollbar pr-1">
+            <div className="lg:col-span-8 flex flex-col gap-6 h-full overflow-hidden">
                 
-
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -372,17 +379,14 @@ export default function StreakQuestPage() {
                     </div>
                 </motion.div>
 
-                {/* Weekly Progress */}
-                <div className="shrink-0">
-                   <WeeklyProgress habits={habits} />
-                </div>
+
 
                 {/* Active Quests */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-surface-dark rounded-3xl p-8 flex-1 shadow-sm flex flex-col min-h-[300px]"
+                  className="bg-surface-dark rounded-3xl p-8 flex-1 shadow-sm flex flex-col min-h-0 overflow-hidden"
                 >
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
@@ -417,7 +421,8 @@ export default function StreakQuestPage() {
                         </motion.div>
                     </div>
 
-                    <AnimatePresence mode="wait">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 -mr-2">
+                        <AnimatePresence mode="wait">
                       {habits.length === 0 ? (
                           <motion.div 
                             key="empty"
@@ -441,7 +446,7 @@ export default function StreakQuestPage() {
                       ) : (
                           <motion.div 
                             key="grid"
-                            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            className={cn("grid gap-4", habits.length > 2 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -454,12 +459,14 @@ export default function StreakQuestPage() {
                                         onToggle={handleToggleHabit} 
                                         onDelete={handleDeleteHabit}
                                         index={index}
+                                        compact={habits.length > 2}
                                     />
                                 ))}
                               </AnimatePresence>
                           </motion.div>
                       )}
-                    </AnimatePresence>
+                        </AnimatePresence>
+                    </div>
                 </motion.div>
             </div>
       </div>
