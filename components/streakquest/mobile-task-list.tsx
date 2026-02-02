@@ -184,11 +184,12 @@ export function MobileTaskList({
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0}
                 onDragEnd={onDragEnd}
-                className="w-full h-full overflow-y-auto px-4 pb-40 pt-[72px] overscroll-y-contain"
+                className="absolute inset-0 w-full h-full overflow-hidden"
                 // Prevent vertical scroll interruption
                 style={{ touchAction: "pan-y" }} 
             >
-             {currentFilter.id === 'completed' ? (
+                <div className="w-full h-full overflow-y-auto px-4 pb-40 pt-[72px] overscroll-y-contain mobile-scroll">
+                    {currentFilter.id === 'completed' ? (
                 // Completed Tasks View
                 completedTasks.length === 0 ? (
                 <div
@@ -275,6 +276,7 @@ export function MobileTaskList({
                     ))}
                 </div>
             )}
+                </div>
             </motion.div>
         </AnimatePresence>
       </div>
