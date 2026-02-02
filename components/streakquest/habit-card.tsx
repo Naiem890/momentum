@@ -63,40 +63,92 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   // Time Tracking Logic - only for streakable tasks
+  // Time Tracking Logic - only for streakable tasks
   const isStreakable = habit.isStreakable !== false;
   const isTimeBased = isStreakable && (habit.targetTime || 0) > 0;
-  const currentMinutes = habit.dailyProgress?.[today] || 0;
-  const targetMinutes = habit.targetTime || 0;
-  const progressPercent = isTimeBased ? Math.min(100, (currentMinutes / targetMinutes) * 100) : (isCompleted ? 100 : 0);
-  
+
   const [isActive, setIsActive] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-save timer progress every minute
+  // Convert Daily Progress (minutes) to seconds for local state
+  const storedMinutes = habit.dailyProgress?.[today] || 0;
+  const [localSeconds, setLocalSeconds] = useState(storedMinutes * 60);
+  const localSecondsRef = useRef(storedMinutes * 60);
+
+  // Keep ref in sync for cleanup function
+  useEffect(() => {
+    localSecondsRef.current = localSeconds;
+  }, [localSeconds]);
+
+  // Sync local state when prop changes (if not active, to respect remote updates)
+  useEffect(() => {
+    if (!isActive) {
+        setLocalSeconds(storedMinutes * 60);
+        localSecondsRef.current = storedMinutes * 60;
+    }
+  }, [storedMinutes, isActive]);
+
+  const targetMinutes = habit.targetTime || 0;
+  const progressPercent = isTimeBased ? Math.min(100, (localSeconds / 60 / targetMinutes) * 100) : (isCompleted ? 100 : 0);
+  
+  // Backwards compatibility for render
+  const currentMinutes = Math.floor(localSeconds / 60);
+
+  // 1. Timer Driver & Safety
   useEffect(() => {
     if (isActive && isTimeBased) {
       timerRef.current = setInterval(() => {
+        setLocalSeconds(prev => {
+           const newValue = prev + 1;
+           // Sync to parent every 60 seconds
+           if (newValue % 60 === 0 && onProgress) {
+               onProgress(habit.id, Math.floor(newValue / 60));
+           }
+           return newValue;
+        });
+      }, 1000); 
+
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        e.returnValue = '';
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        // Final sync
         if (onProgress) {
-            onProgress(habit.id, currentMinutes + 1);
+             onProgress(habit.id, Math.floor(localSecondsRef.current / 60));
         }
-      }, 60000); 
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
+      };
     }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isActive, isTimeBased, habit.id, currentMinutes, onProgress]);
+  }, [isActive, isTimeBased, habit.id, onProgress]);
+
+  // 2. Title Updater (runs every second)
+  useEffect(() => {
+      if (isActive && isTimeBased) {
+           document.title = `▶ ${formatTime(localSeconds)} • ${habit.title}`;
+           return () => {
+               document.title = 'Momentum';
+           };
+      }
+  }, [isActive, isTimeBased, localSeconds, habit.title]);
 
   const toggleTimer = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsActive(!isActive);
   };
 
-  const formatTime = (mins: number) => {
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return `${h}h ${m}m`;
+  const formatTime = (totalSeconds: number) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    
+    if (h > 0) {
+        return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   const getIcon = (category: string, title: string) => {
@@ -228,10 +280,10 @@ export function HabitCard({ habit, onToggle, onDelete, onEdit, onProgress, index
                     {isTimeBased && (
                         <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
                             <span className={cn(isActive && "text-amber-400 font-bold")}>
-                                {formatTime(currentMinutes)}
+                                {formatTime(localSeconds)}
                             </span>
                             <span className="opacity-30">/</span>
-                            <span>{formatTime(targetMinutes)}</span>
+                            <span>{formatTime(targetMinutes * 60)}</span>
                         </div>
                     )}
                 </div>

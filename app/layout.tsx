@@ -56,9 +56,9 @@ export const metadata: Metadata = {
     title: "Momentum",
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "/icon.png?v=5",
+    shortcut: "/icon.png?v=5",
+    apple: "/apple-touch-icon.png?v=5",
   },
 };
 
