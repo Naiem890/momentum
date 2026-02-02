@@ -53,6 +53,7 @@ const variants = {
   exit: (direction: number) => ({
     x: direction < 0 ? 20 : -20,
     opacity: 0,
+    pointerEvents: "none" as const,
   }),
 };
 
@@ -183,7 +184,7 @@ export function MobileTaskList({
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0}
                 onDragEnd={onDragEnd}
-                className="w-full h-full overflow-y-auto px-4 pb-40 pt-[72px]"
+                className="w-full h-full overflow-y-auto px-4 pb-40 pt-[72px] overscroll-y-contain"
                 // Prevent vertical scroll interruption
                 style={{ touchAction: "pan-y" }} 
             >
