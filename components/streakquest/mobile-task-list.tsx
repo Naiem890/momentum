@@ -179,10 +179,11 @@ export function MobileTaskList({
                     opacity: { duration: 0.2 }
                 }}
                 drag="x"
+                dragDirectionLock
                 dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.1}
+                dragElastic={0}
                 onDragEnd={onDragEnd}
-                className="w-full h-full overflow-y-auto px-4 pb-[400px] pt-[72px]"
+                className="w-full h-full overflow-y-auto px-4 pb-40 pt-[72px]"
                 // Prevent vertical scroll interruption
                 style={{ touchAction: "pan-y" }} 
             >
