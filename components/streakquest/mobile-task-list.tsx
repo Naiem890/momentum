@@ -274,17 +274,7 @@ export function MobileTaskList({
         </AnimatePresence>
       </div>
 
-      {/* FAB - Floating Action Button */}
-      <motion.button
-        layout
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={onAddNew}
-        className="fixed bottom-[90px] right-5 w-14 h-14 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30 z-40"
-      >
-        <Plus className="w-7 h-7 text-background-dark" strokeWidth={2.5} />
-      </motion.button>
+
 
       {/* Restore Task Dialog */}
       <AlertDialog open={taskToRestore !== null} onOpenChange={(open) => !open && setTaskToRestore(null)}>

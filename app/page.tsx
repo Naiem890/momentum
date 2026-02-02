@@ -289,6 +289,10 @@ export default function MomentumDashboard() {
         <MobileNavigation 
           activeTab={mobileTab}
           onTabChange={setMobileTab}
+          onAdd={() => {
+            setEditingHabit(null);
+            setIsAddModalOpen(true);
+          }}
         />
 
         {/* Add/Edit Drawer - Mobile Native */}

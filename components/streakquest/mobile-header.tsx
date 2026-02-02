@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Flame, CheckCircle2 } from 'lucide-react';
 import { Habit } from '@/lib/types';
 import { AuthButton } from '@/components/auth';
+import { WaterFillStreak } from './water-fill-streak';
 
 interface MobileHeaderProps {
   currentStreak: number;
@@ -43,18 +44,13 @@ export function MobileHeader({ currentStreak, habits }: MobileHeaderProps) {
             {/* Stats - Only show if there are habits */}
             {totalDaily > 0 && (
                 <div className="flex items-center gap-3 mr-1">
-                    {/* Streak Count */}
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-surface-dark border border-white/5">
-                        <Flame className="w-3.5 h-3.5 text-orange-500 fill-orange-500/20" />
-                        <span className="text-xs font-bold text-orange-100">{visualStreak}</span>
-                    </div>
-
-                    {/* Daily Progress */}
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-surface-dark border border-white/5">
-                        <CheckCircle2 className={`w-3.5 h-3.5 ${completedDaily === totalDaily ? 'text-green-500' : 'text-primary'}`} />
-                        <span className="text-xs font-bold text-gray-200">
-                            {completedDaily}/{totalDaily}
-                        </span>
+                    {/* Streak Count - Water Fill Effect */}
+                    <div className="w-[72px] h-[40px] relative">
+                         <WaterFillStreak 
+                            value={visualStreak} 
+                            progress={totalDaily > 0 ? completedDaily / totalDaily : 0} 
+                            className="w-full h-full"
+                         />
                     </div>
                 </div>
             )}

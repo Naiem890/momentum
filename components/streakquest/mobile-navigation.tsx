@@ -10,9 +10,10 @@ type TabType = 'tasks' | 'stats';
 interface MobileNavigationProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
+  onAdd: () => void;
 }
 
-export function MobileNavigation({ activeTab, onTabChange }: MobileNavigationProps) {
+export function MobileNavigation({ activeTab, onTabChange, onAdd }: MobileNavigationProps) {
   const tabs = [
     { id: 'tasks' as TabType, label: 'Tasks', icon: Flame },
     { id: 'stats' as TabType, label: 'Stats', icon: BarChart3 },
@@ -20,75 +21,64 @@ export function MobileNavigation({ activeTab, onTabChange }: MobileNavigationPro
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-50"
+      className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      {/* Glass effect background */}
-      <div className="absolute inset-0 bg-[#0a0a0a]/95 backdrop-blur-2xl border-t border-white/10" />
-      
-      {/* Subtle glow at top */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-      
-      <div className="relative flex items-stretch h-18 max-w-lg mx-auto">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          
-          return (
+      {/* Container specific for the dock content to allow clicks */}
+      <div className="pointer-events-auto">
+        {/* Glass effect background */}
+        <div className="absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-white/10" />
+        
+        {/* Subtle glow at top */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        
+        <div className="relative flex items-center h-[70px] max-w-lg mx-auto px-6">
+            {/* Left Tab: Tasks */}
             <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={cn(
-                "flex-1 flex flex-col items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer relative",
-                "active:scale-95"
-              )}
+              onClick={() => onTabChange('tasks')}
+              className="flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform"
             >
-              {/* Active pill background */}
-              {isActive && (
-                <motion.div
-                  layoutId="navPill"
-                  className="absolute inset-x-4 top-2 bottom-2 rounded-2xl"
-                  // transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              
-              <motion.div
-                className="relative z-10 flex flex-col items-center gap-1"
-                // animate={{ 
-                //   y: isActive ? -2 : 0,
-                //   scale: isActive ? 1.05 : 1
-                // }}
-                // transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              >
-                {/* Icon with glow effect when active */}
-                <div className="relative">
-                  {isActive && (
-                    <div className="absolute inset-0 bg-primary/40 rounded-full blur-lg scale-150" />
-                  )}
-                  <Icon 
+                <Flame 
                     className={cn(
-                      "w-7 h-7 transition-all duration-300 relative z-10",
-                      isActive 
-                        ? "text-primary drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]" 
-                        : "text-gray-500"
-                    )}
-                    strokeWidth={isActive ? 2.5 : 2}
-                    fill={isActive && tab.id === 'tasks' ? 'rgba(52,211,153,0.2)' : 'none'}
-                  />
-                </div>
-                
-                <span 
-                  className={cn(
-                    "text-xs font-bold uppercase tracking-wider transition-all duration-300",
-                    isActive ? "text-primary" : "text-gray-500"
-                  )}
-                >
-                  {tab.label}
-                </span>
-              </motion.div>
+                        "w-6 h-6 transition-all",
+                        activeTab === 'tasks' ? "text-primary fill-primary/20" : "text-gray-500"
+                    )} 
+                />
+                <span className={cn(
+                    "text-[10px] font-bold uppercase tracking-wider transition-colors",
+                    activeTab === 'tasks' ? "text-primary" : "text-gray-500"
+                )}>Tasks</span>
             </button>
-          );
-        })}
+
+            {/* Center FAB */}
+            <div className="relative -top-6">
+                <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={onAdd}
+                    className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)] border-4 border-background-dark"
+                >
+                    <div className="w-1.5 h-6 bg-background-dark rounded-full absolute" />
+                    <div className="h-1.5 w-6 bg-background-dark rounded-full absolute" />
+                </motion.button>
+            </div>
+
+            {/* Right Tab: Stats */}
+            <button
+               onClick={() => onTabChange('stats')}
+               className="flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform"
+            >
+                <BarChart3 
+                    className={cn(
+                        "w-6 h-6 transition-all",
+                        activeTab === 'stats' ? "text-primary fill-primary/20" : "text-gray-500"
+                    )} 
+                />
+                <span className={cn(
+                    "text-[10px] font-bold uppercase tracking-wider transition-colors",
+                    activeTab === 'stats' ? "text-primary" : "text-gray-500"
+                )}>Stats</span>
+            </button>
+        </div>
       </div>
     </nav>
   );

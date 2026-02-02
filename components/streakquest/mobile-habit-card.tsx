@@ -27,15 +27,14 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 interface MobileHabitCardProps {
   habit: Habit;
@@ -315,28 +314,33 @@ export function MobileHabitCard({ habit, onToggle, onDelete, onEdit, onProgress,
         )}
       </AnimatePresence>
 
-      {/* Delete Dialog */}
-      <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <AlertDialogContent className="bg-surface-dark border-surface-border text-white mx-4 rounded-2xl max-w-sm">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Task?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
-              This will permanently delete <span className="text-white font-bold">"{habit.title}"</span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel className="bg-transparent border-surface-border text-gray-300 hover:bg-surface-dark-lighter rounded-xl flex-1">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => onDelete(habit.id)}
-              className="bg-red-500 text-white hover:bg-red-600 border-none rounded-xl flex-1"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Delete Drawer */}
+      <Drawer open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <DrawerContent className="bg-surface-dark border-surface-border">
+          <div className="mx-auto w-full max-w-sm">
+            <DrawerHeader>
+              <DrawerTitle className="text-white text-center text-xl">Delete Task?</DrawerTitle>
+              <DrawerDescription className="text-gray-400 text-center">
+                This will permanently delete <span className="text-white font-bold">"{habit.title}"</span>.
+                This action cannot be undone.
+              </DrawerDescription>
+            </DrawerHeader>
+            <DrawerFooter className="gap-3 pb-8">
+              <Button 
+                onClick={() => onDelete(habit.id)}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-6 rounded-2xl text-lg shadow-lg shadow-red-500/20"
+              >
+                Yes, Delete it
+              </Button>
+              <DrawerClose asChild>
+                <Button variant="outline" className="w-full bg-surface-dark-lighter border-surface-border text-gray-300 hover:bg-surface-border hover:text-white py-6 rounded-2xl text-lg font-medium">
+                  Cancel
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
