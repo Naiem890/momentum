@@ -129,18 +129,18 @@ export function MobileTaskList({
   }, [filterIndex]);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* Filter Pills */}
+    <div className="flex flex-col h-full overflow-hidden relative">
+      {/* Filter Pills - Sticky Header Effect */}
       <div 
         ref={filtersContainerRef}
-        className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar shrink-0"
+        className="absolute top-0 left-0 right-0 z-10 px-4 py-3 bg-background-dark/95 backdrop-blur-md border-b border-white/5 flex gap-2 overflow-x-auto no-scrollbar"
       >
         {filters.map((f, index) => (
           <button
             key={f.id}
             onClick={() => setFilter(index)}
             className={cn(
-              "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-300 relative",
+              "flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-300 relative",
               filterIndex === index
                 ? "text-white"
                 : "text-gray-500 hover:text-gray-400"
@@ -165,7 +165,7 @@ export function MobileTaskList({
       </div>
 
       {/* Task List - Swipeable Area */}
-      <div className="flex-1 relative overflow-hidden w-full">
+      <div className="flex-1 relative overflow-hidden w-full h-full">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
             <motion.div
                 key={filterIndex}
@@ -182,7 +182,7 @@ export function MobileTaskList({
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.1}
                 onDragEnd={onDragEnd}
-                className="w-full h-full overflow-y-auto px-4 pb-[400px]"
+                className="w-full h-full overflow-y-auto px-4 pb-[400px] pt-[72px]"
                 // Prevent vertical scroll interruption
                 style={{ touchAction: "pan-y" }} 
             >
