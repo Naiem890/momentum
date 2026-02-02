@@ -39,6 +39,7 @@ import {
   RotateCcw,
   Trash2,
   Circle,
+  HelpCircle,
 } from 'lucide-react';
 
 // Mobile components
@@ -50,6 +51,7 @@ import { MobileHeader } from '@/components/streakquest/mobile-header';
 import { MobileTaskList } from '@/components/streakquest/mobile-task-list';
 import { MobileStatsView } from '@/components/streakquest/mobile-stats-view';
 import { MobileAddTaskDrawer } from '@/components/streakquest/mobile-add-task-drawer';
+import { UserGuideModal } from '@/components/streakquest/user-guide-modal';
 import { AuthButton, LoginScreen } from '@/components/auth';
 
 
@@ -86,6 +88,7 @@ export default function MomentumDashboard() {
   const [taskFilter, setTaskFilter] = useState<'all' | 'daily' | 'onetime' | 'completed'>('all');
   const [taskToRestore, setTaskToRestore] = useState<Habit | null>(null);
   const [mobileTab, setMobileTab] = useState<'tasks' | 'stats'>('tasks');
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   
   // Mobile detection
   const isMobile = useIsMobile();
@@ -234,8 +237,11 @@ export default function MomentumDashboard() {
         {/* Celebration */}
         <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
         
+        {/* User Guide Modal */}
+        <UserGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+        
         {/* Mobile Header - Shared Stats Header */}
-        <MobileHeader currentStreak={currentStreak} habits={habits} />
+        <MobileHeader currentStreak={currentStreak} habits={habits} onHelpClick={() => setIsGuideOpen(true)} />
         
         {/* Content Area */}
         <div className="flex-1 overflow-hidden">
@@ -334,8 +340,21 @@ export default function MomentumDashboard() {
            <Flame className="w-5 h-5 text-primary" />
            Momentum
         </motion.div>
-        <AuthButton />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsGuideOpen(true)}
+            className="h-9 w-9 text-gray-500 hover:text-primary hover:bg-primary/10 rounded-full"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </Button>
+          <AuthButton />
+        </div>
       </motion.nav>
+
+      {/* User Guide Modal */}
+      <UserGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
       {/* Quote of the Day - Full Width Top Row */}
       <motion.div 

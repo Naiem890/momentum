@@ -2,17 +2,19 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, CheckCircle2 } from 'lucide-react';
+import { Flame, CheckCircle2, HelpCircle } from 'lucide-react';
 import { Habit } from '@/lib/types';
 import { AuthButton } from '@/components/auth';
 import { WaterFillStreak } from './water-fill-streak';
+import { Button } from '@/components/ui/button';
 
 interface MobileHeaderProps {
   currentStreak: number;
   habits: Habit[];
+  onHelpClick?: () => void;
 }
 
-export function MobileHeader({ currentStreak, habits }: MobileHeaderProps) {
+export function MobileHeader({ currentStreak, habits, onHelpClick }: MobileHeaderProps) {
   // Calculate daily progress
   const streakableHabits = habits.filter(h => h.isStreakable);
   const totalDaily = streakableHabits.length;
@@ -40,7 +42,7 @@ export function MobileHeader({ currentStreak, habits }: MobileHeaderProps) {
         </div>
 
         {/* Right Side: Stats & Auth */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
             {/* Stats - Only show if there are habits */}
             {totalDaily > 0 && (
                 <div className="flex items-center gap-3 mr-1">
@@ -53,6 +55,18 @@ export function MobileHeader({ currentStreak, habits }: MobileHeaderProps) {
                          />
                     </div>
                 </div>
+            )}
+            
+            {/* Help Button */}
+            {onHelpClick && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onHelpClick}
+                className="h-9 w-9 text-gray-500 hover:text-primary hover:bg-primary/10 rounded-full"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </Button>
             )}
             
             <AuthButton />
