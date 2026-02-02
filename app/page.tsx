@@ -230,7 +230,7 @@ export default function MomentumDashboard() {
   // ============================================
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-background-dark text-gray-300 flex flex-col">
+      <div className="h-[100dvh] overflow-hidden bg-background-dark text-gray-300 flex flex-col">
         {/* Celebration */}
         <Celebration trigger={showCelebration} onComplete={() => setShowCelebration(false)} />
         
