@@ -21,8 +21,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Momentum",
-  description: "Gamified habit tracking",
+  title: {
+    default: "Momentum | Gamified Habit Tracking",
+    template: "%s | Momentum"
+  },
+  description: "Build streaks, earn XP, and level up your life with Momentum. The ultimate gamified habit tracker for staying consistent.",
+  keywords: ["habit tracker", "gamification", "productivity", "streak", "momentum", "self-improvement", "goals"],
+  authors: [{ name: "Momentum Team" }],
+  metadataBase: new URL("https://momen-tum.vercel.app"),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://momen-tum.vercel.app",
+    title: "Momentum | Gamified Habit Tracking",
+    description: "Build streaks, earn XP, and level up your life with Momentum. The ultimate gamified habit tracker for staying consistent.",
+    siteName: "Momentum",
+    images: [{
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Momentum Dashboard"
+    }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Momentum | Gamified Habit Tracking",
+    description: "Build streaks, earn XP, and level up your life with Momentum. The ultimate gamified habit tracker for staying consistent.",
+    images: ["/og-image.png"],
+    creator: "@momentum_app",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Momentum",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
