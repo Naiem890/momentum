@@ -179,16 +179,9 @@ export function MobileTaskList({
                     x: { type: "spring", stiffness: 300, damping: 30 },
                     opacity: { duration: 0.2 }
                 }}
-                drag="x"
-                dragDirectionLock
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0}
-                onDragEnd={onDragEnd}
-                className="absolute inset-0 w-full h-full overflow-hidden"
-                // Prevent vertical scroll interruption
-                style={{ touchAction: "pan-y" }} 
+                className="w-full h-full"
             >
-                <div className="w-full h-full overflow-y-auto px-4 pb-40 pt-[72px] overscroll-y-contain mobile-scroll">
+                <div className="w-full h-full overflow-y-auto px-4 pb-40 pt-[72px] overscroll-y-contain mobile-scroll" style={{ touchAction: "pan-y" }}>
                     {currentFilter.id === 'completed' ? (
                 // Completed Tasks View
                 completedTasks.length === 0 ? (
