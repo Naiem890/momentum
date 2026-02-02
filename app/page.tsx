@@ -293,6 +293,8 @@ export default function MomentumDashboard() {
             setEditingHabit(null);
             setIsAddModalOpen(true);
           }}
+          completedCount={streakableTasks.filter(h => h.completedDates.includes(new Date().toISOString().split('T')[0])).length}
+          totalCount={streakableTasks.length}
         />
 
         {/* Add/Edit Drawer - Mobile Native */}

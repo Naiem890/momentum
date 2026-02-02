@@ -11,9 +11,11 @@ interface MobileNavigationProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
   onAdd: () => void;
+  completedCount: number;
+  totalCount: number;
 }
 
-export function MobileNavigation({ activeTab, onTabChange, onAdd }: MobileNavigationProps) {
+export function MobileNavigation({ activeTab, onTabChange, onAdd, completedCount, totalCount }: MobileNavigationProps) {
   const tabs = [
     { id: 'tasks' as TabType, label: 'Tasks', icon: Flame },
     { id: 'stats' as TabType, label: 'Stats', icon: BarChart3 },
@@ -36,8 +38,17 @@ export function MobileNavigation({ activeTab, onTabChange, onAdd }: MobileNaviga
             {/* Left Tab: Tasks */}
             <button
               onClick={() => onTabChange('tasks')}
-              className="flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform"
+              className="flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform relative"
             >
+                {/* Progress Badge */}
+                {totalCount > 0 && (
+                    <div className="absolute top-0 right-[25%] -mr-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-surface-dark border border-white/10 px-1">
+                        <span className="text-[9px] font-bold text-gray-300">
+                            {completedCount}/{totalCount}
+                        </span>
+                    </div>
+                )}
+
                 <Flame 
                     className={cn(
                         "w-6 h-6 transition-all",
