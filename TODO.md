@@ -1,0 +1,9 @@
+- Need to make sure this app works properly on offline
+- If possible can add some kind of 3rd party apps that checks if we are working or no
+- is the time tracked is stored somewhere? if not then store it somewhere(backend/locally)
+- Need inner/child tasks inside a main task so that I can manage them properly
+- May be add a notes section for each task 
+- add somekind of timeline like google calander for. a tasks
+- improve the notificaitn part where we can tigger the user more precisely to grab the attention properly
+- share the progress to the world
+- publish this app to public
